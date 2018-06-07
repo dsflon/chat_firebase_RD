@@ -1,0 +1,53 @@
+@charset "utf-8";
+
+.fw {
+
+    .roomlist {
+
+        .roomlist-item {
+            margin-top: 2px;
+            padding: 0 2px;
+
+            .roomlist-btn {
+
+                border: none;
+                background: none;
+                display: flex;
+                width: 100%;
+                flex-flow: row wrap;
+                justify-content: flex-start;
+                text-align: left;
+                padding: 10px 20px;
+                background: #FFF;
+                position: relative;
+
+                .roomlist-thumb {
+                    width: 18%;
+                    height: 0;
+                    padding-bottom: 18%;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: cover;
+                    border-radius: 100%;
+                    background-image: url(/images/profile_placeholder.png)
+                }
+                .roomlist-wrap {
+                    width: 80%;
+                    padding-left: 20px;
+                    line-height: 1.2;
+                    .roomlist-name { font-size: 14px; font-weight: bold; margin: 2px 0 5px; }
+                    .roomlist-mess { font-size: 12px; color: $black40; }
+                    .roomlist-time {
+                        position: absolute;
+                        top: 10px; right: 10px;
+                        font-size: 12px; color: $black60;
+                    }
+                }
+
+            }
+
+        }//.roomlist-item
+
+    }
+
+}//.fw

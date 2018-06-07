@@ -1,0 +1,57 @@
+@charset "utf-8";
+
+
+	// ---------------------------------------------------------------------------
+	//
+	// Column
+	//
+	// ---------------------------------------------------------------------------
+	@mixin pc_column {
+
+		.f-col {
+			@include column();
+			@include columnMg();
+			@include columnMb();
+		}//.col
+
+	}
+
+	@mixin tb_column {
+
+		.f-col {
+			@include column( $device: "tb" );
+			@include columnMg( $device: "tb" );// $parent, $children(ex: ".f-col1 ~ .f-col12")
+			@include columnMb( $device: "tb" );// $parent, $children(ex: ".f-col1 ~ .f-col12")
+		}//.col
+
+	}
+
+	@mixin sp_column {
+
+		.f-col {
+			@include column( $device: "sp" );
+			@include columnMg( $device: "sp" );// $parent, $children(ex: ".f-col1 ~ .f-col12")
+			@include columnMb( $device: "sp" );// $parent, $children(ex: ".f-col1 ~ .f-col12")
+		}//.col
+
+	}
+
+
+	// ---------------------------------------------------------------------------
+	//
+	// Play
+	//
+	// ---------------------------------------------------------------------------
+	@if not $mobile-first {
+
+		@include pc { @include pc_column; }//pc
+		@include tb { @include tb_column; }//tb
+		@include sp { @include sp_column; }//sp
+
+	} @else {
+
+		@include sp { @include sp_column; }//sp
+		@include tb { @include tb_column; }//tb
+		@include pc { @include pc_column; }//pc
+
+	}

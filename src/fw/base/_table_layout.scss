@@ -1,0 +1,102 @@
+@charset "utf-8";
+
+	// ---------------------------------------------------------------------------
+	//
+	// Table Layout Base
+	//
+	// ---------------------------------------------------------------------------
+
+	// Defalt
+	// -----------------------------------------------------
+	.f-table {
+
+		display:table;
+		width: 100%;
+		table-layout: fixed;
+
+		> *:not(.f-table_row) {
+			display: table-cell;
+			vertical-align: middle;
+		}
+
+		> .f-table_row {
+			display: table-row;
+			> * {
+				display: table-cell;
+				vertical-align: middle;
+			}
+		}
+
+
+	}//.table
+
+
+	// ---------------------------------------------------------------------------
+	//
+	// Table Layout Column
+	//
+	// ---------------------------------------------------------------------------
+	@mixin pc_tableLayout {//pc
+
+		.f-table,
+		.f-table > .f-table_row {
+
+			@include columnWidth( "", "f-cell" );
+
+			.f-cell12 {
+				display: inline-block;
+			}
+
+		}//.table
+
+	}//pc
+
+	@mixin tb_tableLayout {//tb
+
+		.f-table,
+		.f-table > .f-table_row {
+
+			@include columnWidth( "tb", "f-cell" );
+
+			.f-cell12_tb {
+				display: inline-block;
+			}
+
+		}//.table
+
+	}//tb
+
+	@mixin sp_tableLayout {//sp
+
+		.f-table,
+		.f-table > .f-table_row {
+
+			@include columnWidth( "sp", "f-cell" );
+
+			.f-cell12_sp {
+				display: inline-block;
+			}
+
+		}//.table
+
+	}//sp
+
+
+	// ---------------------------------------------------------------------------
+	//
+	// Play
+	//
+	// ---------------------------------------------------------------------------
+	@if not $mobile-first {
+
+		@include pc { @include pc_tableLayout; }//pc
+		@include tb { @include tb_tableLayout; }//tb
+		@include sp { @include sp_tableLayout; }//sp
+
+	} @else {
+
+		@include sp { @include sp_tableLayout; }//sp
+		@include tb { @include tb_tableLayout; }//tb
+		@include pc { @include pc_tableLayout; }//pc
+
+	}

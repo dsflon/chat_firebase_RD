@@ -1,0 +1,39 @@
+@charset "utf-8";
+
+// ----------------------------------------------------------
+// font-family,size,color,width, etc.
+// ----------------------------------------------------------
+@import "setting";
+
+
+// ----------------------------------------------------------
+// Megane Template Core File
+// ----------------------------------------------------------
+@import "../fw/reset";
+@import "mixin";
+
+@import "../fw/base/base_layout";
+@import "../fw/base/normalize";
+@import "../fw/base/text";
+@import "../fw/base/flex";
+@import "../fw/base/margin_padding";
+
+
+// ----------------------------------------------------------
+// Atomic Design
+// ----------------------------------------------------------
+
+//Atoms
+@import "0_atoms/atoms";
+
+//Molecules
+@import "1_molecules/molecules";
+
+//Organisms
+
+//Templates
+@import "3_templates/_layout";
+
+//Templates
+@import "4_pages/_list";
+@import "4_pages/_talk";

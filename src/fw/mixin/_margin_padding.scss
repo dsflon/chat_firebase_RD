@@ -1,0 +1,94 @@
+@charset "utf-8";
+
+// ---------------------------------------------------------------------------
+//
+// margin
+//
+// ---------------------------------------------------------------------------
+@mixin mg( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "margin" );
+
+}
+
+@mixin mt( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "margin-top" );
+
+}
+
+@mixin mr( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "margin-right" );
+
+}
+
+@mixin mb( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "margin-bottom" );
+
+}
+
+@mixin ml( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "margin-left" );
+
+}
+
+// ---------------------------------------------------------------------------
+//
+// padding
+//
+// ---------------------------------------------------------------------------
+@mixin pd( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "padding" );
+
+}
+
+@mixin pt( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "padding-top" );
+
+}
+
+@mixin pr( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "padding-right" );
+
+}
+
+@mixin pb( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "padding-bottom" );
+
+}
+
+@mixin pl( $pc:0, $tb:-1, $sp:-1 ) {
+
+	@include addGutter( $pc, $tb, $sp, "padding-left" );
+
+}
+
+// ---------------------------------------------------------------------------
+//
+// addGutter
+//
+// ---------------------------------------------------------------------------
+@mixin addGutter( $pc, $tb, $sp, $gutter: "" ){
+
+	@if not $mobile-first {
+
+		@include pc { #{$gutter}: $pc; }
+		@if $tb != -1 { @include tb { #{$gutter}: $tb; } }
+		@if $sp != -1 { @include sp { #{$gutter}: $sp; } }
+
+	} @else {
+
+		@include sp { #{$gutter}: $pc; }
+		@if $tb != -1 { @include tb { #{$gutter}: $tb; } }
+		@if $sp != -1 { @include pc { #{$gutter}: $sp; } }
+
+	}
+
+}

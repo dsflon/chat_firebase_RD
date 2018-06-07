@@ -1,0 +1,18 @@
+@charset "utf-8";
+
+.fw {
+    // ----------------------------------------------------------
+    // Box - generator
+    // ----------------------------------------------------------
+    .a-box_gn {
+        background: $black10;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    .a-box_gn_line {
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid $color_main;
+    }
+
+}//.fw

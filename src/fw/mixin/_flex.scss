@@ -1,0 +1,173 @@
+@charset "utf-8";
+
+
+// ---------------------------------------------------------------------------
+//
+// Base Setting
+//
+// ---------------------------------------------------------------------------
+
+@mixin flexBase( $wrap: "wrap", $direction:  "row", $justify: "flex-start", $align: "stretch" ){
+
+    display: flex;
+
+    flex-flow: #{$direction} #{$wrap};
+    justify-content: #{$justify};
+    align-items: #{$align};
+
+}
+
+// ---------------------------------------------------------------------------
+//
+// Flex width and margin
+//
+// ---------------------------------------------------------------------------
+
+
+@mixin flex( $device: "", $class: "f-flex", $gutter: $col_gutter ){
+
+    @include flexWidth( $device, $class, $gutter );
+    @include flexGutter( $gutter );
+
+}
+
+
+// ---------------------------------------------------------------------------
+//
+// Column margin left and right
+//
+// ---------------------------------------------------------------------------
+
+@mixin flexMgWidth( $device: "", $class: "f-flex" ){
+
+    $_device: "";
+
+    @if $device != "" {
+        $_device: _#{$device};
+    }
+
+    @for $i from 0 through 16 {
+
+        $num: $i*5;
+
+        &.#{$class}_mg#{$num}#{$_device} {
+
+            @if not $mobile-first {
+
+                @if $device == "" {
+
+                    @include flexWidth( "", $class, $num );
+                    @include tb { @include flexWidth( "tb", $class, $num ); }
+                    @include sp { @include flexWidth( "sp", $class, $num ); }
+
+                } @else if $device == "tb" {
+
+                    @include flexWidth( "tb", $class, $num );
+                    @include sp { @include flexWidth( "sp", $class, $num ); }
+
+                } @else if $device == "sp" {
+
+                    @include flexWidth( "sp", $class, $num );
+
+                }
+
+            } @else {
+
+                @if $device == "" {
+
+                    @include flexWidth( "", $class, $num );
+
+                } @else if $device == "tb" {
+
+                    @include flexWidth( "tb", $class, $num );
+                    @include pc { @include flexWidth( "", $class, $num ); }
+
+                } @else if $device == "sp" {
+
+                    @include flexWidth( "sp", $class, $num );
+                    @include tb { @include flexWidth( "tb", $class, $num ); }
+                    @include pc { @include flexWidth( "", $class, $num ); }
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+@mixin flexMg( $device: "", $class: "f-flex" ){
+
+    $_device: "";
+
+    @if $device != "" {
+        $_device: _#{$device};
+    }
+
+    // Margin Setting
+    // -----------------------------------------------------
+
+    @for $i from 0 through 16 {
+
+        $num: $i*5;
+
+        &.#{$class}_mg#{$num}#{$_device} {
+
+            @include flexGutter($num);
+            @include flexWidth( $device, $class, $num );
+
+        }
+
+    }
+
+}
+
+// ---------------------------------------------------------------------------
+//
+// Column margin bottom
+//
+// ---------------------------------------------------------------------------
+@mixin flexMb( $device: "", $class: "f-flex" ){
+
+    $_device: "";
+
+    @if $device != "" {
+        $_device: _#{$device};
+    }
+
+    @for $i from 0 through 16 {
+
+        $num: $i*5;
+
+        &.#{$class}_mb#{$num}#{$_device} {
+            margin-bottom: -#{$num}px;
+            & > * { margin-bottom: $num + px; }
+        }
+
+    }
+}
+
+// ---------------------------------------------------------------------------
+//
+// Order
+//
+// ---------------------------------------------------------------------------
+@mixin flexOrder( $device: "", $class: "f-flex" ){
+
+    $_device: "";
+
+    @if $device != "" {
+        $_device: _#{$device};
+    }
+
+    @for $i from 0 through 16 {
+
+        > .#{$class}_order#{$i}#{$_device} {
+            order: #{$i};
+        }
+
+    }
+
+}

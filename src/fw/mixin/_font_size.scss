@@ -1,0 +1,24 @@
+@charset "utf-8";
+
+// ---------------------------------------------------------------------------
+//
+// f-font_size
+//
+// ---------------------------------------------------------------------------
+@mixin fontSize( $pc:$font-size_base, $tb:-1, $sp:-1 ) {
+
+	@if not $mobile-first {
+
+		@include pc { font-size: $pc; }
+		@if $tb != -1 { @include tb { font-size: $tb; } }
+		@if $sp != -1 { @include sp { font-size: $sp; } }
+
+	} @else {
+
+		@include sp { font-size: $pc; }
+		@if $tb != -1 { @include tb { font-size: $tb; } }
+		@if $sp != -1 { @include pc { font-size: $sp; } }
+
+	}
+
+}

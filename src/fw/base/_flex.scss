@@ -1,0 +1,81 @@
+@charset "utf-8";
+
+
+	// ---------------------------------------------------------------------------
+	//
+	// Flex
+	//
+	// ---------------------------------------------------------------------------
+
+	.f-flex {
+
+		@include flexBase();
+
+		&.f-flex_middle {
+			@include flexBase( $align: "center" );
+		}
+
+		&.f-flex_justify {
+			& > * {
+        		flex: 1;
+			}
+		}
+
+	}
+
+	@mixin pc_flex {
+
+		.f-flex {
+			@include flex();
+			@include flexMg();
+			@include flexMb();
+			@include flexOrder();
+		}//.col
+
+	}
+
+	@mixin tb_flex {
+
+		.f-flex {
+			@include flex( "tb" );
+			@include flexMg( "tb" );
+			@include flexMb( "tb" );
+			@include flexOrder( "tb" );
+		}//.col
+
+	}
+
+	@mixin sp_flex {
+
+		.f-flex {
+			@include flex( "sp" );
+			@include flexMg( "sp" );
+			@include flexMb( "sp" );
+			@include flexOrder( "sp" );
+		}//.col
+
+	}
+
+	.f-flex {
+
+	}//.col
+
+
+	// ---------------------------------------------------------------------------
+	//
+	// Play
+	//
+	// ---------------------------------------------------------------------------
+	@if not $mobile-first {
+
+		@include pc { @include pc_flex; }//pc
+		@include tb { @include tb_flex; }//tb
+		@include sp { @include sp_flex; }//sp
+
+	} @else {
+
+		@include sp { @include sp_flex; }//sp
+		@include tb { @include tb_flex; }//tb
+		@include pc { @include pc_flex; }//pc
+
+	}

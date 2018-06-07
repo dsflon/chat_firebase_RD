@@ -1,0 +1,110 @@
+@charset "utf-8";
+
+// ---------------------------------------------------------------------------
+//
+// responsive
+//
+// ---------------------------------------------------------------------------
+@mixin min($width) {
+
+	@media screen and (min-width: $width) {
+		@content;
+	}
+
+}
+@mixin max($width) {
+
+	@media screen and (max-width: $width) {
+		@content;
+	}
+
+}
+@mixin onlyPc {
+
+	@media screen and (min-width: $width_tb + 1 + px) {//onlyPc
+		@content;
+	}
+
+}
+@mixin onlySp {
+
+	@media screen and (max-width: $width_sp + px) {//onlyPc
+		@content;
+	}
+
+}
+@mixin underTb {
+
+	@media screen and (max-width: $width_tb + px) {//onlyPc
+		@content;
+	}
+
+}
+
+@mixin largePc {
+
+	@media print, screen and (min-width: $width_largePc + px) {//largePc
+		@content;
+	}
+
+}
+
+@mixin pc {
+
+	@if not $mobile-first {
+
+		@content;
+
+	} @else {
+
+		@media only screen and (min-width: $width_tb + 1 + px) {//pc
+			@content;
+		}
+
+	}
+
+}
+
+
+@mixin tb {
+
+	@if $responsive {
+
+		@if not $mobile-first {
+
+			@media only screen and (max-width: $width_tb + px) {//tb
+				@content;
+			}
+
+		} @else {
+
+			@media only screen and (min-width: $width_sp + 1 + px) {//tb
+				@content;
+			}
+
+		}
+
+	}
+
+}
+
+
+@mixin sp {
+
+	@if $responsive {
+
+		@if not $mobile-first {
+
+			@media only screen and (max-width: $width_sp + px) {//sp
+				@content;
+			}
+
+		} @else {
+
+			@content;
+
+		}
+
+	}
+
+}

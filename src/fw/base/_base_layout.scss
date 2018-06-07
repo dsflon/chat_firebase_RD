@@ -1,0 +1,130 @@
+@charset "utf-8";
+
+.fw  {
+	overflow: hidden;
+	font-family: $font_base;
+	color : $color_text;
+	font-size: $font-size_base + px;
+	line-height: $line-height_base;
+}
+
+@mixin pc_layout {
+
+	.fw {
+		min-width: $width-main + px;
+
+		.f-tb { display: none; }
+		.f-sp { display: none; }
+		.f-pc { display: inline-block; }
+
+		#container {
+
+			#contents {
+				float: left;
+				width: $width_contents + px;
+				&.f-max { float: inherit; width: 100%; }
+			}
+
+			#side { width: $width_side + px; float: right; }
+
+		}
+
+		.f-inner {
+			display: block;
+			max-width: $width-main + px;
+			margin: 0 auto;
+			padding: 0;
+			@include clearfix;
+		}
+		.clearfix { @include clearfix; }
+
+	}//.fw
+
+}
+
+// ---------------------------------------------------------------------------
+//
+// Tablet
+//
+// ---------------------------------------------------------------------------
+@mixin tb_layout {
+
+	.fw {
+
+		min-width: 100%;
+
+		.f-pc { display: none; }
+		.f-sp { display: none; }
+		.f-tb { display: inline-block; }
+
+		@include mobileLayout;
+
+
+	}//.fw
+
+}
+
+
+// ---------------------------------------------------------------------------
+//
+// Smart Phone
+//
+// ---------------------------------------------------------------------------
+@mixin sp_layout {
+
+	.fw {
+		min-width: 320px;
+
+	    .f-pc { display: none; }
+	    .f-tb { display: none; }
+	    .f-sp { display: inline-block; }
+
+		@include mobileLayout;
+
+	}//.fw
+
+}
+
+
+// -------------------------------------------
+// mobile Layout
+// -------------------------------------------
+@mixin mobileLayout {
+
+	#container {
+
+		#contents {
+			float: inherit; width: 100%;
+			&.f-max { float: inherit; width: 100%; }
+		}
+		#side { width: initial; float: inherit; }
+
+	}
+
+	.f-inner {
+		width: 100%;
+		margin: 0;
+		padding: 0 20px;
+	}
+
+}
+
+
+// ---------------------------------------------------------------------------
+//
+// Play
+//
+// ---------------------------------------------------------------------------
+@if not $mobile-first {
+
+	@include pc { @include pc_layout; }//pc
+	@include tb { @include tb_layout; }//tb
+	@include sp { @include sp_layout; }//sp
+
+} @else {
+
+	@include sp { @include sp_layout; }//sp
+	@include tb { @include tb_layout; }//tb
+	@include pc { @include pc_layout; }//pc
+
+}

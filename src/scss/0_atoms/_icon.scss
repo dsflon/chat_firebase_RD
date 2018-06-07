@@ -1,0 +1,32 @@
+@charset "utf-8";
+
+.fw {
+
+    // ----------------------------------------------------------
+    // Icon
+    // ----------------------------------------------------------
+    .a-arrow_r {
+        @include arrowAbs($color:#FFF, $size:10, $width:2, $layout:right, $position:20, $direction:right);
+    }
+    .a-arrow_l {
+        @include arrowAbs($color:#FFF, $size:10, $width:2, $layout:left, $position:20, $direction:left);
+    }
+
+    .a-arrow_txt_r {
+        display: inline-block;
+        position: relative;
+        @include arrow($color: $color_main, $size:6, $width:2, $layout:right, $direction:right);
+    }
+    .a-arrow_txt_l {
+        display: inline-block;
+        position: relative;
+        @include arrow($color: $color_main, $size:6, $width:2, $layout:left, $direction:left);
+    }
+
+    .a-btn_disabled {
+        &.a-arrow_r, &.a-arrow_l {
+            &:before { border-color: $black40; }
+        }
+    }
+
+}//.fw

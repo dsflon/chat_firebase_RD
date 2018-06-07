@@ -1,0 +1,67 @@
+@charset "utf-8";
+
+// ---------------------------------------------------------------------------
+//
+// Base Column
+//
+// ---------------------------------------------------------------------------
+@mixin column( $device: "", $class: "f-col", $gutter: $col_gutter ){
+
+	@include clearfix;
+	@include columnWidth( $device, $class );
+	@include columnGutter( $gutter );
+
+	> * { float:left; }
+
+}
+
+// ---------------------------------------------------------------------------
+//
+// Column margin left and right
+//
+// ---------------------------------------------------------------------------
+@mixin columnMg( $device: "", $class: "f-col" ){
+
+	$_device: "";
+
+	@if $device != "" {
+		$_device: _#{$device};
+	}
+
+	// Margin Setting
+	// -----------------------------------------------------
+	@for $j from 0 through 16 {
+
+        $num: $j*5;
+
+        &.#{$class}_mg#{$num}#{$_device} { @include columnGutter( $num ); }
+
+	}
+
+}
+
+// ---------------------------------------------------------------------------
+//
+// Column margin bottom
+//
+// ---------------------------------------------------------------------------
+@mixin columnMb( $device: "", $class: "f-col" ){
+
+	$_device: "";
+
+	@if $device != "" {
+		$_device: _#{$device};
+	}
+
+	@for $j from 0 through 16 {
+
+        $num: $j*5;
+
+		&.#{$class}_mb#{$num}#{$_device} {
+            margin-bottom: -#{$num}px;
+			& > * { margin-bottom: $num + px; }
+		}
+
+	}
+
+}

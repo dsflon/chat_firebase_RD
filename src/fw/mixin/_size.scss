@@ -1,0 +1,42 @@
+@charset "utf-8";
+
+// ---------------------------------------------------------------------------
+//
+// Size
+//
+// ---------------------------------------------------------------------------
+@mixin width( $pc:initial, $tb:-1, $sp:-1 ) {
+
+	@if not $mobile-first {
+
+		@include pc { width: $pc; }
+		@if $tb != -1 { @include tb { width: $tb; } }
+		@if $sp != -1 { @include sp { width: $sp; } }
+
+	} @else {
+
+		@include sp { width: $pc; }
+		@if $tb != -1 { @include tb { width: $tb; } }
+		@if $sp != -1 { @include pc { width: $sp; } }
+
+	}
+
+}
+
+@mixin height( $pc:initial, $tb:-1, $sp:-1 ) {
+
+	@if not $mobile-first {
+
+		@include pc { height: $pc; }
+		@if $tb != -1 { @include tb { height: $tb; } }
+		@if $sp != -1 { @include sp { height: $sp; } }
+
+	} @else {
+
+		@include sp { height: $pc; }
+		@if $tb != -1 { @include tb { height: $tb; } }
+		@if $sp != -1 { @include pc { height: $sp; } }
+
+	}
+
+}

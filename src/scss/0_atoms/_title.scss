@@ -1,0 +1,144 @@
+@charset "utf-8";
+
+.fw {
+
+    .a-ttl {
+
+        line-height: 1.4;
+        font-family: $font_sub;
+        letter-spacing: 0.02em;
+        color: $color_main;
+        font-weight: bold;
+        font-size: 4.0vw;
+        @media screen and (min-width: $width_sp + 1 + px) {
+            font-size: 16px;
+        }
+
+        &_m {
+            font-size: 4.6vw;
+            @media screen and (min-width: $width_sp + 1 + px) {
+                font-size: 18px;
+            }
+        }
+        &_l {
+            font-size: 5.6vw;
+            @media screen and (min-width: $width_sp + 1 + px) {
+                font-size: 24px;
+            }
+            .a-ttl_sub {
+                color: $color_text;
+                font-size: 4.0vw;
+                @media screen and (min-width: $width_sp + 1 + px) {
+                    font-size: 16px;
+                }
+            }
+        }
+        &_xl {
+            font-size: 6vw;
+            @media screen and (min-width: $width_sp + 1 + px) {
+                font-size: 26px;
+            }
+        }
+        &_gray {
+            color: $color_text;
+        }
+        &_white {
+            color: #FFF;
+        }
+
+        &_dotted {
+        }
+
+        // ----------------------------------------------------------
+        // Title - generator
+        // ----------------------------------------------------------
+        &_gn_line {
+            color: $color_text;
+            line-height: 1.8;
+            font-size: 4.6vw;
+            padding-bottom: 30px;
+            border-bottom: 2px solid $color_main;
+            @media screen and (min-width: $width_sp + 1 + px) {
+                font-size: 18px;
+            }
+        }
+        &_gn_img {
+            margin-bottom: 5px;
+            max-width: 400px;
+        }
+        &_gn_min {
+            color: $black70;
+            font-family: $font_sub;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            text-align: center;
+            font-size: 4.0vw;
+            @media screen and (min-width: $width_sp + 1 + px) {
+                font-size: 16px;
+            }
+        }
+
+    }
+
+    // ----------------------------------------------------------
+    // Title - generator
+    // ----------------------------------------------------------
+    // .a-ttl_gn, .a-ttl_gn_m, .a-ttl_gn_line {
+    //     text-align: center;
+    //     line-height: 1.4;
+    //     font-family: $font_sub;
+    //     letter-spacing: 0.02em;
+    // }
+    // .a-ttl_gn, .a-ttl_gn_m {
+    //     color: $color_main;
+    //     font-weight: bold;
+    // }
+    // .a-ttl_gn {
+    //     font-size: 5.6vw;
+    //     @media screen and (min-width: $width_sp + 1 + px) {
+    //         font-size: 24px;
+    //     }
+    // }
+    // .a-ttl_gn_m {
+    //     margin-bottom: 20px;
+    //     font-size: 4.6vw;
+    //     @media screen and (min-width: $width_sp + 1 + px) {
+    //         font-size: 18px;
+    //     }
+    // }
+    //
+    // .a-ttl_gn_line {
+    //     line-height: 1.8;
+    //     font-size: 4.6vw;
+    //     padding-bottom: 30px;
+    //     border-bottom: 2px solid $color_main;
+    //     @media screen and (min-width: $width_sp + 1 + px) {
+    //         font-size: 18px;
+    //     }
+    // }
+    //
+    // .a-ttl_gn_img {
+    //     margin-bottom: 5px;
+    //     max-width: 400px;
+    // }
+    //
+    // .a-ttl_gn_min {
+    //     color: $black70;
+    //     font-family: $font_sub;
+    //     font-weight: bold;
+    //     margin-bottom: 20px;
+    //     line-height: 1.4;
+    //     text-align: center;
+    //     font-size: 4.0vw;
+    //     @media screen and (min-width: $width_sp + 1 + px) {
+    //         font-size: 16px;
+    //     }
+    // }
+    //
+    // .a-ttl_gray {
+    //     color: $color_text;
+    // }
+
+
+}//.fw

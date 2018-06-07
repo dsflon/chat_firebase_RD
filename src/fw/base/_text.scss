@@ -1,0 +1,24 @@
+@charset "utf-8";
+
+	// ----------------------------------------------------------
+	// Align
+	// ----------------------------------------------------------
+	.f-txt_left { text-align: left !important; }
+	.f-txt_center { text-align: center !important; }
+	.f-txt_right { text-align: right !important; }
+
+	// ----------------------------------------------------------
+	// Text Color
+	// ----------------------------------------------------------
+	.f-txt_red { color:$red !important;}
+	.f-txt_blue { color:$blue !important;}
+	.f-txt_white { color:#FFF !important;}
+	.f-txt_yellow { color:$yellow !important;}
+	.f-txt_green { color:$green !important;}
+
+	// ----------------------------------------------------------
+	// Letter Spacing
+	// ----------------------------------------------------------
+	.f-space_s { letter-spacing: -0.02em !important; }
+	.f-space_m { letter-spacing: 0.03em !important;}
+	.f-space_l { letter-spacing: 0.08em !important;}

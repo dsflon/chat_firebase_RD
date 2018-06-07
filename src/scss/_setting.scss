@@ -1,0 +1,103 @@
+// Font Family
+//------------------------------------------------------------------------------
+
+	$font_base: 'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック',sans-serif;
+	$font_sub: 'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック',sans-serif;
+
+// Font Size
+//------------------------------------------------------------------------------
+	$font-size_base: 14;
+
+
+// Line height
+//------------------------------------------------------------------------------
+	$line-height_base: 1.6;
+
+
+// Width
+//------------------------------------------------------------------------------
+
+	//全体横幅
+	$width-main: 768;
+
+	//サイドコンテンツ横幅
+	$width_side: 220;
+
+	//メインコンテンツ横幅
+	$width_contents: 744;
+
+
+// Responsive / Mobile First
+//------------------------------------------------------------------------------
+
+	$responsive: false;
+	$mobile-first: false;
+
+
+// Break Point
+//------------------------------------------------------------------------------
+
+	$width_largePc: 1160;
+	$width_tb: 768;
+	$width_sp: 640;
+
+
+// Column Margin
+//------------------------------------------------------------------------------
+
+	//カラム間margin
+	$col_gutter: 20;//px
+
+	//カラム Margin Bottom
+	$col_margin-bottom: 0;//px
+
+
+// section | section.f-section { margin-top: $section_margin_top + px; } | /common/fw/layout/layout.scss
+//------------------------------------------------------------------------------
+	$section_margin_top: 60;
+
+
+// Color
+//------------------------------------------------------------------------------
+	//Main color
+	$color_main: #333333;
+	$color_sub: #333333;
+
+	//text color
+	$color_text: #333333;
+
+	//Link color
+	$color_link: #01a2b9;
+
+	//Other
+	$black100: #000;
+	$black90: #333;
+	$black80: #504f4f;
+	$black70: #686868;
+	$black60: #7d7d7d;
+	$black50: #999;
+	$black40: #b2b1b1;
+	$black30: #CCC;
+	$black20: #DDD;
+	$black10: #e9e9e9;
+	$black0: #f7f7f7;
+
+	$red:#ea0a0a;
+	$blue:#2D72A7;
+	$aqua:#50a4d4;
+	$yellow:#ead805;
+	$green:#9abc50;
+
+
+// Form Height
+//------------------------------------------------------------------------------
+
+	$input_height: 30;//px
+	$input_color: $color_main;
+
+	// radio checkbox 枠
+	$input-icon_base: 20;//px
+	// radio アイコン
+	$input-icon_radio: 10;//px
+	// checkbox アイコン
+	$input-icon_check: 16;//px

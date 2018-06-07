@@ -1,0 +1,78 @@
+@charset "utf-8";
+
+// ---------------------------------------------------------------------------
+//
+// Size
+//
+// ---------------------------------------------------------------------------
+@mixin top( $pc:auto, $tb:-1, $sp:-1 ) {
+
+	@if not $mobile-first {
+
+		@include pc { top: $pc; }
+		@if $tb != -1 { @include tb { top: $tb; } }
+		@if $sp != -1 { @include sp { top: $sp; } }
+
+	} @else {
+
+		@include sp { top: $pc; }
+		@if $tb != -1 { @include tb { top: $tb; } }
+		@if $sp != -1 { @include pc { top: $sp; } }
+
+	}
+
+}
+
+@mixin right( $pc:auto, $tb:-1, $sp:-1 ) {
+
+	@if not $mobile-first {
+
+		@include pc { right: $pc; }
+		@if $tb != -1 { @include tb { right: $tb; } }
+		@if $sp != -1 { @include sp { right: $sp; } }
+
+	} @else {
+
+		@include sp { right: $pc; }
+		@if $tb != -1 { @include tb { right: $tb; } }
+		@if $sp != -1 { @include pc { right: $sp; } }
+
+	}
+
+}
+
+@mixin bottom( $pc:auto, $tb:-1, $sp:-1 ) {
+
+	@if not $mobile-first {
+
+		@include pc { bottom: $pc; }
+		@if $tb != -1 { @include tb { bottom: $tb; } }
+		@if $sp != -1 { @include sp { bottom: $sp; } }
+
+	} @else {
+
+		@include sp { bottom: $pc; }
+		@if $tb != -1 { @include tb { bottom: $tb; } }
+		@if $sp != -1 { @include pc { bottom: $sp; } }
+
+	}
+
+}
+
+@mixin left( $pc:auto, $tb:-1, $sp:-1 ) {
+
+	@if not $mobile-first {
+
+		@include pc { left: $pc; }
+		@if $tb != -1 { @include tb { left: $tb; } }
+		@if $sp != -1 { @include sp { left: $sp; } }
+
+	} @else {
+
+		@include sp { left: $pc; }
+		@if $tb != -1 { @include tb { left: $tb; } }
+		@if $sp != -1 { @include pc { left: $sp; } }
+
+	}
+
+}
