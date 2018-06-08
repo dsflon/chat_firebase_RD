@@ -1,3 +1,6 @@
+const Login = (value) => {
+    return { type: "LOGIN", value };
+}
 const Meta = (value) => {
     return { type: "META", value };
 }
@@ -9,6 +12,7 @@ const Messages = (value) => {
 }
 
 export {
+    Login,
     Meta,
     Members,
     Messages

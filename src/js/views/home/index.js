@@ -4,7 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ActionCreators from '../../actions';
 
-import Fetch from '../../_fetch';
+import Fetch from '../../common/_fetch';
+import TimeStamp from '../../common/_timestamp';
 
 class App extends React.Component {
 
@@ -15,12 +16,13 @@ class App extends React.Component {
     componentWillMount() {
     }
     componentDidMount() {
-        Fetch(this.actions);
+        if(this.state.myAccount) Fetch(this.actions);
     }
 
     componentWillUpdate() {
     }
     componentDidUpdate() {
+        if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
     }
 
     ShowTalk(e) {
@@ -41,26 +43,13 @@ class App extends React.Component {
 
             let users = members[roomId];
 
-            if( users.hasOwnProperty(this.state.myAccount) ) {
+            if( users.hasOwnProperty(this.state.myAccount.uid) ) {
                 myRoomId.push(roomId)
             }
 
         }
 
         return myRoomId;
-
-    }
-
-    TimeStamp(num) {
-
-        const data = new Date(num);
-        var year = data.getFullYear();
-        var month = data.getMonth()+1;
-        var day = data.getDate();
-        var hour = data.getHours();
-        var minute = data.getMinutes();
-
-        return month + "/" + day + " " + hour + ":" + String(minute).padStart(2, "0")
 
     }
 
@@ -74,7 +63,7 @@ class App extends React.Component {
             let roomMember = roomData.members;
 
             for (var userId in roomMember) {
-                if( this.state.myAccount !== userId ) {
+                if( this.state.myAccount.uid !== userId ) {
                     roomMember = roomMember[userId]
                 }
             }
@@ -87,7 +76,7 @@ class App extends React.Component {
                         <div className="roomlist-wrap">
                             <p className="roomlist-name">{roomMember.name}</p>
                             <p className="roomlist-mess">{roomData.lastMessage}</p>
-                            <p className="roomlist-time">{this.TimeStamp(roomData.timestamp)}</p>
+                            <p className="roomlist-time">{TimeStamp(roomData.timestamp)}</p>
                         </div>
                     </button>
                 </li>
@@ -99,6 +88,27 @@ class App extends React.Component {
 
     }
 
+    Login() {
+
+        this.actions.Login({
+            uid: "4946YwuQf0Qzw6NNnmElkKugZlp1",
+            thumb: "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
+        });
+
+    }
+
+    Logout() {
+
+        var res = confirm("ログアウトしますか？");
+        if( res == true ) {
+            console.log("ログアウトしました。");
+            this.actions.Login(null);
+        } else {
+            console.log("キャンセル");
+        }
+
+    }
+
     render() {
 
         this.state = this.props.state;
@@ -106,15 +116,22 @@ class App extends React.Component {
         this.history = this.props.history;
 
         let myRoomList;
-        if( this.state.members && this.state.meta ) {
+        if( this.state.myAccount && this.state.meta ) {
             let myRoomId = this.GetMyRoomId(this.state.members);
                 myRoomList = this.GetMyRoomList(myRoomId,this.state.meta);
         }
 
+        let logoutBtn = this.state.myAccount ? <button onClick={this.Logout.bind(this)} className="logout" style={ this.state.myAccount.thumb ? { "backgroundImage": "url("+ this.state.myAccount.thumb +")" } : null }></button> : null;
+        let loginBtn = !this.state.myAccount ? <button onClick={this.Login.bind(this)} className="login">login</button> : null;
+
         return (
             <div className="page" ref="page">
                 <header>
-                    <h1>トーク一覧</h1>
+                    <h1>Talk</h1>
+                    <div className="user">
+                        {logoutBtn}
+                        {loginBtn}
+                    </div>
                 </header>
                 <div className="page-scroll" ref="page_scroll">
 

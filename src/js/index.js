@@ -9,7 +9,7 @@ import Root from './_root'
 
 
 const initialState = {
-    myAccount: "4946YwuQf0Qzw6NNnmElkKugZlp1",
+    myAccount: null,
     meta: null,
     members: null,
     messages: null

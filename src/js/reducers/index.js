@@ -2,22 +2,22 @@ const reducer = (state, action) => {
 
     switch (action.type) {
 
-        case 'FETCH': //members
+        case 'LOGIN':
         return Object.assign({}, state, {
-            fetch: action.value,
+            myAccount: action.value,
         })
 
-        case 'META': //members
+        case 'META':
         return Object.assign({}, state, {
             meta: action.value,
         })
 
-        case 'MEMBERS': //members
+        case 'MEMBERS':
         return Object.assign({}, state, {
             members: action.value,
         })
 
-        case 'MESSAGES': //members
+        case 'MESSAGES':
         return Object.assign({}, state, {
             messages: action.value,
         })
