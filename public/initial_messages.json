@@ -5,11 +5,11 @@
             "lastMessage": "こんにちは、はじめまして。",
             "timestamp": 1528433977698,
             "members": {
-                "4946YwuQf0Qzw6NNnmElkKugZlp1": {
+                "qIGf0AzOcIgsTOF1uhYOjEMACZm1": {
                     "name": "斎藤大輝",
                     "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
                 },
-                "lynh3SqnBiQTCbOfWv7GFbm6XRV2": {
+                "oBpXupTDGHff8Y7B7GJMyFAt8dX2": {
                     "name": "斎藤家",
                     "thumb": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"
                 }
@@ -19,7 +19,7 @@
             "lastMessage": "こんにちは、はじめまして。。。",
             "timestamp": 1459361875666,
             "members": {
-                "4946YwuQf0Qzw6NNnmElkKugZlp1": {
+                "qIGf0AzOcIgsTOF1uhYOjEMACZm1": {
                     "name": "斎藤大輝",
                     "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
                 },
@@ -30,33 +30,18 @@
         }
     },
 
-    "members": {
-        "room_163d3d9c7621b1": {
-            "4946YwuQf0Qzw6NNnmElkKugZlp1": true,
-            "lynh3SqnBiQTCbOfWv7GFbm6XRV2": true
-        },
-        "room_163d3d9c7621b2": {
-            "4946YwuQf0Qzw6NNnmElkKugZlp2": true,
-            "lynh3SqnBiQTCbOfWv7GFbm6XRV3": true
-        },
-        "room_163d3d9c7621b3": {
-            "4946YwuQf0Qzw6NNnmElkKugZlp1": true,
-            "lynh3SqnBiQTCbOfWv7GFbm6XRV3": true
-        }
-    },
-
     "messages": {
         "room_163d3d9c7621b1": {
             "-K2ib4H77rj0LYewF7dV": {
                 "name": "斎藤家",
-                "uid": "lynh3SqnBiQTCbOfWv7GFbm6XRV2",
+                "uid": "oBpXupTDGHff8Y7B7GJMyFAt8dX2",
                 "thumb": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
                 "message": "はじめまして。はじめまして。はじめまして。はじめまして。",
                 "timestamp": 1459361875337
             },
             "-K2ib4H77rj0LYewF7dP": {
                 "name": "斎藤大輝",
-                "uid": "4946YwuQf0Qzw6NNnmElkKugZlp1",
+                "uid": "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
                 "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
                 "message": "はじめまして。",
                 "timestamp": 1528433977698

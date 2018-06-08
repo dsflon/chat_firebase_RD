@@ -7,6 +7,7 @@
     "start": "webpack-dev-server --mode development --hot --inline",
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
+    "firebase": "webpack --mode development && firebase serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

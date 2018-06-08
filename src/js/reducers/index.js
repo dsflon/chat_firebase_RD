@@ -12,11 +12,6 @@ const reducer = (state, action) => {
             meta: action.value,
         })
 
-        case 'MEMBERS':
-        return Object.assign({}, state, {
-            members: action.value,
-        })
-
         case 'MESSAGES':
         return Object.assign({}, state, {
             messages: action.value,

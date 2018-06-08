@@ -16,7 +16,13 @@
 <body class="fw" style="overflow:hidden">
 
     <main id="app"></main>
+
+    <!-- update the version number as needed -->
+    <script src="/__/firebase/4.10.1/firebase.js"></script>
+    <script src="/__/firebase/init.js"></script>
+
     <script src="/bundle.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
     <script>
       // Initialize Firebase
@@ -29,7 +35,21 @@
         messagingSenderId: "1092855635066"
       };
       firebase.initializeApp(config);
+
+
+      // 
+      // let metaRef = firebase.database().ref('meta');
+      //
+      // metaRef.off();
+      // metaRef.on('child_added', (data) => {
+      //     console.log(data.val());
+      // });
+      // metaRef.on('child_changed', (data) => {
+      //     console.log(data.val());
+      // });
+
     </script>
+
 </body>
 
 </html>

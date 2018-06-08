@@ -17,13 +17,39 @@ class App extends React.Component {
     componentWillMount() {
     }
     componentDidMount() {
+
         // リロードしたときの処理
-        if( !this.state.messages || !this.state.messages.uid ) Fetch(this.actions,this.roomId);
+        if( !this.state.meta ) Fetch(this.actions);
+
+        // ログアウト時のリダイレクト
+        window.auth.onAuthStateChanged( (user) => {
+            if(!user) this.history.push("/");
+        });
+
+        this.GetMessageData()
+
     }
 
     componentWillUpdate() {
     }
     componentDidUpdate() {
+    }
+
+    GetMessageData() {
+
+        let MessageRef = window.database.ref( 'messages/' + this.roomId );
+
+        let Message = {}
+
+        let SetMessages = (data) => {
+            Message[data.key] = data.val();
+            this.actions.Messages(Message);
+        };
+
+        MessageRef.off();
+        MessageRef.on('child_added', SetMessages);
+        MessageRef.on('child_changed', SetMessages);
+
     }
 
     GetMyRoomData(meta) {
@@ -42,9 +68,10 @@ class App extends React.Component {
 
     GetRoomName() {
 
-        if( this.state.myAccount && this.state.messages ) {
+        if( this.state.messages ) {
 
             let roomData = this.GetMyRoomData(this.state.meta[this.roomId]);
+
             this.roomName = roomData.name;
 
             return roomData.name;
@@ -100,8 +127,10 @@ class App extends React.Component {
         this.state = this.props.state;
         this.actions = this.props.actions;
         this.match = this.props.match;
+        this.history = this.props.history;
 
         this.roomId = this.match.params.id;
+        this.messages = this.state.messages;
 
         let roomName = this.GetRoomName(),
             messages = this.GetMessages();

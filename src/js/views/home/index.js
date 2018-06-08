@@ -7,22 +7,42 @@ import * as ActionCreators from '../../actions';
 import Fetch from '../../common/_fetch';
 import TimeStamp from '../../common/_timestamp';
 
+let prevId;
+
 class App extends React.Component {
 
     constructor(props) {
         super(props);
+        this.userBtn = <button className="logout"></button>;
     }
 
     componentWillMount() {
     }
     componentDidMount() {
-        if(this.state.myAccount) Fetch(this.actions);
+
+        if(!this.state.myAccount) Fetch(this.actions);
+
+        window.auth.onAuthStateChanged( (user) => {
+
+            if (user) { // User is signed in!
+
+                this.userBtn = <button onClick={this.Logout.bind(this)} className="logout" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>;
+
+            } else { // User is signed out!
+
+                this.userBtn = <button onClick={this.Login.bind(this)} className="login">login</button>;
+                this.actions.Login(null);
+
+            }
+
+        })
+
     }
 
     componentWillUpdate() {
     }
     componentDidUpdate() {
-        if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
+        // if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
     }
 
     ShowTalk(e) {
@@ -30,59 +50,52 @@ class App extends React.Component {
         e.preventDefault();
 
         let id = e.currentTarget.id;
-        this.actions.Messages(this.state.messages[id]);
+        if( id !== prevId ) this.actions.Messages(null);
         this.history.push("/talk/"+id);
 
-    }
-
-    GetMyRoomId(members) {
-
-        let myRoomId = [];
-
-        for (var roomId in members) {
-
-            let users = members[roomId];
-
-            if( users.hasOwnProperty(this.state.myAccount.uid) ) {
-                myRoomId.push(roomId)
-            }
-
-        }
-
-        return myRoomId;
+        prevId = id;
 
     }
 
-    GetMyRoomList(myRoomId,meta) {
+    GetMyRoomList(meta) {
 
         let myRoomlist = [];
 
-        for (var i = 0; i < myRoomId.length; i++) {
+        for (var roomId in meta) {
 
-            let roomData = meta[myRoomId[i]];
-            let roomMember = roomData.members;
+            let roomData = meta[roomId],
+                roomUsers = roomData.members;
 
-            for (var userId in roomMember) {
-                if( this.state.myAccount.uid !== userId ) {
-                    roomMember = roomMember[userId]
-                }
-            }
+            if( roomUsers.hasOwnProperty(this.state.myAccount.uid) ) {
 
-            myRoomlist.push(
+                for (var uid in roomUsers) {
 
-                <li key={myRoomId[i]} className="roomlist-item">
-                    <button id={myRoomId[i]} className="roomlist-btn" onClick={this.ShowTalk.bind(this)}>
-                        <figure className="roomlist-thumb" style={ roomMember.thumb ? { "backgroundImage": "url("+ roomMember.thumb +")" } : null }></figure>
-                        <div className="roomlist-wrap">
-                            <p className="roomlist-name">{roomMember.name}</p>
-                            <p className="roomlist-mess">{roomData.lastMessage}</p>
-                            <p className="roomlist-time">{TimeStamp(roomData.timestamp)}</p>
-                        </div>
-                    </button>
-                </li>
+                    if( uid !== this.state.myAccount.uid ) {
 
-            );
-        }
+                        let member = roomUsers[uid];
+
+                        myRoomlist.push(
+
+                            <li key={roomId} className="roomlist-item">
+                                <button id={roomId} className="roomlist-btn" onClick={this.ShowTalk.bind(this)}>
+                                    <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
+                                    <div className="roomlist-wrap">
+                                        <p className="roomlist-name">{member.name}</p>
+                                        <p className="roomlist-mess">{roomData.lastMessage}</p>
+                                        <p className="roomlist-time">{TimeStamp(roomData.timestamp)}</p>
+                                    </div>
+                                </button>
+                            </li>
+
+                        );
+
+                    }//if
+
+                }//for
+
+            }//if
+
+        }//for
 
         return myRoomlist;
 
@@ -90,19 +103,29 @@ class App extends React.Component {
 
     Login() {
 
-        this.actions.Login({
-            uid: "4946YwuQf0Qzw6NNnmElkKugZlp1",
-            thumb: "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
+        let provider = new firebase.auth.GoogleAuthProvider();
+        window.auth.signInWithPopup(provider).then( (result) => {
+
+            let user = result.user;
+            this.actions.Login({
+                uid: user.uid,
+                thumb: user.photoURL
+            });
+            console.log("ログインしました。");
+
+        }).catch( (error) => {
+            alert(error.message);
         });
 
     }
 
     Logout() {
 
-        var res = confirm("ログアウトしますか？");
+        let res = confirm("ログアウトしますか？");
         if( res == true ) {
-            console.log("ログアウトしました。");
-            this.actions.Login(null);
+            window.auth.signOut().then( () => {
+                console.log("ログアウトしました。");
+            });
         } else {
             console.log("キャンセル");
         }
@@ -116,21 +139,19 @@ class App extends React.Component {
         this.history = this.props.history;
 
         let myRoomList;
+
         if( this.state.myAccount && this.state.meta ) {
-            let myRoomId = this.GetMyRoomId(this.state.members);
-                myRoomList = this.GetMyRoomList(myRoomId,this.state.meta);
+            myRoomList = this.GetMyRoomList(this.state.meta);
         }
 
-        let logoutBtn = this.state.myAccount ? <button onClick={this.Logout.bind(this)} className="logout" style={ this.state.myAccount.thumb ? { "backgroundImage": "url("+ this.state.myAccount.thumb +")" } : null }></button> : null;
-        let loginBtn = !this.state.myAccount ? <button onClick={this.Login.bind(this)} className="login">login</button> : null;
+        // console.log(this.state);
 
         return (
             <div className="page" ref="page">
                 <header>
                     <h1>Talk</h1>
                     <div className="user">
-                        {logoutBtn}
-                        {loginBtn}
+                        {this.userBtn}
                     </div>
                 </header>
                 <div className="page-scroll" ref="page_scroll">
@@ -150,7 +171,6 @@ class App extends React.Component {
         );
 
     }
-
 
 }
 
