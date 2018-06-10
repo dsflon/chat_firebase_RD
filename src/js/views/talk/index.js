@@ -7,6 +7,9 @@ import * as ActionCreators from '../../actions';
 
 import Fetch from '../../common/_fetch';
 import TimeStamp from '../../common/_timestamp';
+import nl2br from '../../common/_nl2br';
+
+import Input from './_input';
 
 class App extends React.Component {
 
@@ -14,8 +17,7 @@ class App extends React.Component {
         super(props);
     }
 
-    componentWillMount() {
-    }
+    componentWillMount() {}
     componentDidMount() {
 
         // リロードしたときの処理
@@ -23,32 +25,45 @@ class App extends React.Component {
 
         // ログアウト時のリダイレクト
         window.auth.onAuthStateChanged( (user) => {
-            if(!user) this.history.push("/");
+
+            if(user) {
+                this.actions.Login({
+                    uid: user.uid,
+                    thumb: user.photoURL
+                });
+            } else {
+                this.history.push("/");
+            }
+
         });
 
         this.GetMessageData()
 
     }
 
-    componentWillUpdate() {
-    }
-    componentDidUpdate() {
+    componentWillUpdate() {}
+    componentDidUpdate() {}
+
+    SetScroll() {
+        this.refs.page_scroll.scrollTop = this.refs.page_scroll.scrollHeight;
     }
 
     GetMessageData() {
 
-        let MessageRef = window.database.ref( 'messages/' + this.roomId );
+        this.messagesRef = window.database.ref( 'messages/' + this.roomId );
+        this.metaRef = window.database.ref( 'meta/' + this.roomId );
 
         let Message = {}
 
         let SetMessages = (data) => {
             Message[data.key] = data.val();
             this.actions.Messages(Message);
+            this.SetScroll();
         };
 
-        MessageRef.off();
-        MessageRef.on('child_added', SetMessages);
-        MessageRef.on('child_changed', SetMessages);
+        this.messagesRef.off();
+        this.messagesRef.on('child_added', SetMessages);
+        this.messagesRef.on('child_changed', SetMessages);
 
     }
 
@@ -71,9 +86,7 @@ class App extends React.Component {
         if( this.state.messages ) {
 
             let roomData = this.GetMyRoomData(this.state.meta[this.roomId]);
-
             this.roomName = roomData.name;
-
             return roomData.name;
 
         }
@@ -97,15 +110,15 @@ class App extends React.Component {
                 messageItem.push(
 
                     <div
-                        id={thisTalk.uid}
-                        key={thisTalk.uid}
+                        id={talkId}
+                        key={talkId}
                         className={"messages-item" + (own ? " own" : "")}>
 
                         {thumb}
 
                         <div className="messages-wrap">
                             <div className="messages-inner">
-                                <p className="messages-mess">{thisTalk.message}</p>
+                                <p className="messages-mess">{nl2br(thisTalk.message)}</p>
                                 <span className="messages-time">{TimeStamp(thisTalk.timestamp)}</span>
                             </div>
                         </div>
@@ -159,18 +172,10 @@ class App extends React.Component {
 
                 </div>
 
-                <footer id="from">
-                    <form id="from-image" action="#">
-                        <input id="image-input" ref="image_input" type="file" accept="image/*,capture=camera" />
-                        <label id="image-btn" htmlFor="image-input"><span>Image</span></label>
-                    </form>
-                    <form id="from-mess" action="#">
-                        <label id="mess-input-wrap">
-                            <textarea id="mess-input" ref="mess_input" type="text" placeholder="Message..." />
-                        </label>
-                        <button id="mess-submit" disabled type="submit">Send</button>
-                    </form>
-                </footer>
+                <Input
+                    setScroll={this.SetScroll.bind(this)}
+                    metaRef={this.metaRef}
+                    messagesRef={this.messagesRef} />
 
             </div>
         );

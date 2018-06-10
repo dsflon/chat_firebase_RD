@@ -6,6 +6,7 @@ import * as ActionCreators from '../../actions';
 
 import Fetch from '../../common/_fetch';
 import TimeStamp from '../../common/_timestamp';
+import GetUniqueStr from '../../common/_getUniqueStr';
 
 let prevId;
 
@@ -20,13 +21,21 @@ class App extends React.Component {
     }
     componentDidMount() {
 
-        if(!this.state.myAccount) Fetch(this.actions);
+        // if(!this.state.myAccount) Fetch(this.actions);
 
         window.auth.onAuthStateChanged( (user) => {
 
             if (user) { // User is signed in!
-
+console.log(user);
                 this.userBtn = <button onClick={this.Logout.bind(this)} className="logout" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>;
+                this.actions.Login({
+                    uid: user.uid,
+                    thumb: user.photoURL
+                });
+
+                this.name = user.displayName;
+                this.uid = user.uid;
+                this.thumb = user.photoURL;
 
             } else { // User is signed out!
 
@@ -42,7 +51,7 @@ class App extends React.Component {
     componentWillUpdate() {
     }
     componentDidUpdate() {
-        // if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
+        if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
     }
 
     ShowTalk(e) {
@@ -54,6 +63,54 @@ class App extends React.Component {
         this.history.push("/talk/"+id);
 
         prevId = id;
+
+    }
+
+    CreateNewTalk(e) {
+
+        e.preventDefault();
+
+        let id = e.currentTarget.id;
+        let metaRef = window.database.ref( 'meta/' + id );
+
+        let metaData = {
+            "lastMessage": "こんにちは、はじめまして。",
+            "timestamp": new Date().getTime(),
+            "members": {
+                "qIGf0AzOcIgsTOF1uhYOjEMACZm1": {
+                    "name": "斎藤大輝",
+                    "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
+                }
+            }
+        };
+        metaData["members"][this.uid] = {
+            "name": this.name,
+            "thumb": this.thumb
+        }
+
+        metaRef.set(metaData).then( () => {
+            console.log("new Talk Room");
+        }).catch( (error) => {
+            console.error('Error writing new message to Firebase Database', error);
+        });
+
+        ////
+
+        let messagesRef = window.database.ref( 'messages/' + id );
+
+        messagesRef.push({
+            "name": "斎藤大輝",
+            "uid": "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
+            "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
+            "message": "こんにちは、はじめまして。",
+            "timestamp": new Date().getTime()
+        }).then( () => {
+            console.log("new Talk Room");
+        }).catch( (error) => {
+            console.error('Error writing new message to Firebase Database', error);
+        });
+
+        this.history.push("/talk/"+id);
 
     }
 
@@ -101,6 +158,21 @@ class App extends React.Component {
 
     }
 
+    GetNewTalk(roomId,member) {
+
+        return (
+            <li key={roomId} className="roomlist-item">
+                <button id={roomId} className="roomlist-btn" onClick={this.CreateNewTalk.bind(this)}>
+                    <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
+                    <div className="roomlist-wrap">
+                        <p className="roomlist-name">{member.name + "と会話を始める"}</p>
+                    </div>
+                </button>
+            </li>
+        )
+
+    }
+
     Login() {
 
         let provider = new firebase.auth.GoogleAuthProvider();
@@ -138,10 +210,23 @@ class App extends React.Component {
         this.actions = this.props.actions;
         this.history = this.props.history;
 
-        let myRoomList;
+        let myRoomList = null;
 
         if( this.state.myAccount && this.state.meta ) {
             myRoomList = this.GetMyRoomList(this.state.meta);
+
+            if( !myRoomList[0] && this.uid !== "qIGf0AzOcIgsTOF1uhYOjEMACZm1" ) {
+
+                myRoomList = this.GetNewTalk(
+                    "room_" + GetUniqueStr(),
+                    {
+                        "name": "斎藤大輝",
+                        "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
+                    }
+                )
+
+            }
+
         }
 
         // console.log(this.state);

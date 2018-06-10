@@ -5,6 +5,8 @@
     #messages {
 
         padding: 20px;
+        // opacity: 0;
+        // transition: opacity 0.2s ease;
 
         .messages-item {
 
@@ -140,6 +142,9 @@
                 border-radius: 4px;
                 text-align: center;
                 padding: 0;
+                &[disabled] {
+                    opacity: 0.5;
+                }
             }
         }
 

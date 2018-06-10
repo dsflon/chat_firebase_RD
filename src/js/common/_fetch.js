@@ -17,13 +17,6 @@
 
 const Fetch = (actions,roomId) => {
 
-    window.auth.onAuthStateChanged( (user) => {
-        actions.Login({
-            uid: user.uid,
-            thumb: user.photoURL
-        });
-    })
-
     GetMetaData(actions);
     // GetMessageData(actions,roomId);
 
@@ -31,7 +24,7 @@ const Fetch = (actions,roomId) => {
 
 function GetMetaData(actions) {
 
-    let metaRef = window.database.ref('meta');
+    let metaRef = window.metaRef = window.database.ref('meta');
 
     let meta = {}
 
@@ -45,22 +38,22 @@ function GetMetaData(actions) {
     metaRef.on('child_changed', SetMeta);
 
 }
-function GetMessageData(actions,roomId) {
-
-    let MessageRef = window.database.ref( 'messages' + (roomId ? "/" + roomId : "") );
-
-    let Message = {}
-
-    let SetMessages = (data) => {
-        Message[data.key] = data.val();
-        actions.Messages(Message);
-    };
-
-    MessageRef.off();
-    MessageRef.on('child_added', SetMessages);
-    MessageRef.on('child_changed', SetMessages);
-
-}
+// function GetMessageData(actions,roomId) {
+//
+//     let MessageRef = window.database.ref( 'messages' + (roomId ? "/" + roomId : "") );
+//
+//     let Message = {}
+//
+//     let SetMessages = (data) => {
+//         Message[data.key] = data.val();
+//         actions.Messages(Message);
+//     };
+//
+//     MessageRef.off();
+//     MessageRef.on('child_added', SetMessages);
+//     MessageRef.on('child_changed', SetMessages);
+//
+// }
 
 
 export default Fetch;
