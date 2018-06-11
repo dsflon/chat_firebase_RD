@@ -18,19 +18,22 @@
 const Fetch = (actions,roomId) => {
 
     GetMetaData(actions);
-    // GetMessageData(actions,roomId);
 
 }
 
 function GetMetaData(actions) {
 
-    let metaRef = window.metaRef = window.database.ref('meta');
+    // let metaRef = window.metaRef = window.database.ref('meta');
+    let metaRef = window.metaRef = window.database.ref('meta').orderByChild('timestamp'); //orderByChildは昇順になる
 
-    let meta = {}
+    let meta = {}, timer;
 
     let SetMeta = (data) => {
         meta[data.key] = data.val();
-        actions.Meta(meta);
+        clearTimeout(timer);
+        timer = setTimeout( () => {
+            actions.Meta(meta);
+        },1)
     };
 
     metaRef.off();
@@ -38,22 +41,6 @@ function GetMetaData(actions) {
     metaRef.on('child_changed', SetMeta);
 
 }
-// function GetMessageData(actions,roomId) {
-//
-//     let MessageRef = window.database.ref( 'messages' + (roomId ? "/" + roomId : "") );
-//
-//     let Message = {}
-//
-//     let SetMessages = (data) => {
-//         Message[data.key] = data.val();
-//         actions.Messages(Message);
-//     };
-//
-//     MessageRef.off();
-//     MessageRef.on('child_added', SetMessages);
-//     MessageRef.on('child_changed', SetMessages);
-//
-// }
 
 
 export default Fetch;

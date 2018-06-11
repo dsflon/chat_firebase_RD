@@ -21,12 +21,10 @@ class App extends React.Component {
     }
     componentDidMount() {
 
-        // if(!this.state.myAccount) Fetch(this.actions);
-
         window.auth.onAuthStateChanged( (user) => {
 
             if (user) { // User is signed in!
-console.log(user);
+
                 this.userBtn = <button onClick={this.Logout.bind(this)} className="logout" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>;
                 this.actions.Login({
                     uid: user.uid,
@@ -71,8 +69,9 @@ console.log(user);
         e.preventDefault();
 
         let id = e.currentTarget.id;
-        let metaRef = window.database.ref( 'meta/' + id );
 
+        ////トーク一覧用のMetaを新しく生成
+        let metaRef = window.database.ref( 'meta/' + id );
         let metaData = {
             "lastMessage": "こんにちは、はじめまして。",
             "timestamp": new Date().getTime(),
@@ -94,10 +93,9 @@ console.log(user);
             console.error('Error writing new message to Firebase Database', error);
         });
 
-        ////
 
+        ////トークの初期データを生成
         let messagesRef = window.database.ref( 'messages/' + id );
-
         messagesRef.push({
             "name": "斎藤大輝",
             "uid": "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
@@ -114,9 +112,25 @@ console.log(user);
 
     }
 
+    GetNewTalk(roomId,member) {
+
+        return (
+            <li key={roomId} className="roomlist-item">
+                <button id={roomId} className="roomlist-btn" onClick={this.CreateNewTalk.bind(this)}>
+                    <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
+                    <div className="roomlist-wrap">
+                        <p className="roomlist-name">{member.name + "と会話を始める"}</p>
+                    </div>
+                </button>
+            </li>
+        )
+
+    }
+
     GetMyRoomList(meta) {
 
-        let myRoomlist = [];
+        let myRoomlist = [],
+            timestamp = [];
 
         for (var roomId in meta) {
 
@@ -131,9 +145,11 @@ console.log(user);
 
                         let member = roomUsers[uid];
 
+                        timestamp.push(roomData.timestamp)
+
                         myRoomlist.push(
 
-                            <li key={roomId} className="roomlist-item">
+                            <li key={roomId} className="roomlist-item" index={roomData.timestamp}>
                                 <button id={roomId} className="roomlist-btn" onClick={this.ShowTalk.bind(this)}>
                                     <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
                                     <div className="roomlist-wrap">
@@ -154,22 +170,13 @@ console.log(user);
 
         }//for
 
+        //タイムスタンプ順に並べる
+        myRoomlist.sort(
+            function(a,b){
+                return (a.props.index < b.props.index ? 1 : -1);
+            }
+        );
         return myRoomlist;
-
-    }
-
-    GetNewTalk(roomId,member) {
-
-        return (
-            <li key={roomId} className="roomlist-item">
-                <button id={roomId} className="roomlist-btn" onClick={this.CreateNewTalk.bind(this)}>
-                    <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
-                    <div className="roomlist-wrap">
-                        <p className="roomlist-name">{member.name + "と会話を始める"}</p>
-                    </div>
-                </button>
-            </li>
-        )
 
     }
 
@@ -177,14 +184,7 @@ console.log(user);
 
         let provider = new firebase.auth.GoogleAuthProvider();
         window.auth.signInWithPopup(provider).then( (result) => {
-
-            let user = result.user;
-            this.actions.Login({
-                uid: user.uid,
-                thumb: user.photoURL
-            });
             console.log("ログインしました。");
-
         }).catch( (error) => {
             alert(error.message);
         });
@@ -198,8 +198,6 @@ console.log(user);
             window.auth.signOut().then( () => {
                 console.log("ログアウトしました。");
             });
-        } else {
-            console.log("キャンセル");
         }
 
     }
@@ -213,6 +211,7 @@ console.log(user);
         let myRoomList = null;
 
         if( this.state.myAccount && this.state.meta ) {
+
             myRoomList = this.GetMyRoomList(this.state.meta);
 
             if( !myRoomList[0] && this.uid !== "qIGf0AzOcIgsTOF1uhYOjEMACZm1" ) {

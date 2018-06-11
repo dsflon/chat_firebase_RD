@@ -53,12 +53,15 @@ class App extends React.Component {
         this.messagesRef = window.database.ref( 'messages/' + this.roomId );
         this.metaRef = window.database.ref( 'meta/' + this.roomId );
 
-        let Message = {}
+        let Message = {}, timer;
 
         let SetMessages = (data) => {
             Message[data.key] = data.val();
-            this.actions.Messages(Message);
-            this.SetScroll();
+            clearTimeout(timer);
+            timer = setTimeout( () => {
+                this.actions.Messages(Message);
+                this.SetScroll();
+            },1)
         };
 
         this.messagesRef.off();
