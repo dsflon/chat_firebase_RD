@@ -13,6 +13,7 @@ class Input extends React.Component {
 
     componentWillMount() {}
     componentDidMount() {
+
         this.refs.mess_input.oninput = (e) => {
             if( e.currentTarget.value ) {
                 this.setState({ disabled: false });
@@ -20,6 +21,9 @@ class Input extends React.Component {
                 this.setState({ disabled: "disabled" });
             }
         }
+
+        this.winheight = window.innerHeight / 2;
+
     }
     componentWillUpdate() {}
     componentDidUpdate() {}
@@ -28,17 +32,15 @@ class Input extends React.Component {
 
         e.preventDefault();
 
-        let value = this.refs.mess_input.value
+        let value = this.refs.mess_input.value;
 
         if (value) {
 
-            var currentUser = window.auth.currentUser;
-
             this.messagesRef.push({
-                name: currentUser.displayName,
-                uid: currentUser.uid,
+                name: window.auth.currentUser.displayName,
+                uid: window.auth.currentUser.uid,
                 message: value,
-                thumb: currentUser.photoURL || '/images/profile_placeholder.png',
+                thumb: window.auth.currentUser.photoURL || '/images/profile_placeholder.png',
                 timestamp: new Date().getTime()
             }).then( () => {
                 console.log("post!");
@@ -48,18 +50,35 @@ class Input extends React.Component {
                 console.error('Error writing new message to Firebase Database', error);
             });
 
-            this.metaRef.update({
-                lastMessage: value,
-                timestamp: new Date().getTime()
-            })
+
+            if( this.meta ) {
+
+                //// Meta Update
+                let updates = {};
+                    updates['/lastMessage'] = value;
+                    updates['/timestamp'] = new Date().getTime();
+                    updates['/members/' + window.auth.currentUser.uid + '/readed'] = false;
+                    for (var uid in this.meta.members) {
+                        updates['/members/' + uid + '/readed'] = false;
+                    }
+
+                this.metaRef.update(updates);
+
+            }
 
         }
 
     }
 
+    Input() {
+        //iOSの予測変換分の位置調整
+        window.scroll( 0, this.winheight );
+    }
+
     render() {
 
         this.setScroll = this.props.setScroll;
+        this.meta = this.props.meta;
         this.messagesRef = this.props.messagesRef;
         this.metaRef = this.props.metaRef;
 
@@ -71,7 +90,12 @@ class Input extends React.Component {
                 </form>
                 <form id="from-mess">
                     <label id="mess-input-wrap">
-                        <textarea id="mess-input" ref="mess_input" type="text" placeholder="Message..." />
+                        <textarea
+                            id="mess-input"
+                            ref="mess_input"
+                            type="text"
+                            placeholder="Message..."
+                            onInput={this.Input.bind(this)} />
                     </label>
                     <button
                         id="mess-submit"

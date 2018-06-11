@@ -1,3 +1,4 @@
+import firebase from 'firebase/app';
 import React from 'react';
 
 import { bindActionCreators } from 'redux';
@@ -78,13 +79,15 @@ class App extends React.Component {
             "members": {
                 "qIGf0AzOcIgsTOF1uhYOjEMACZm1": {
                     "name": "斎藤大輝",
-                    "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
+                    "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
+                    "readed": false
                 }
             }
         };
         metaData["members"][this.uid] = {
             "name": this.name,
-            "thumb": this.thumb
+            "thumb": this.thumb,
+            "readed": false
         }
 
         metaRef.set(metaData).then( () => {
@@ -129,8 +132,7 @@ class App extends React.Component {
 
     GetMyRoomList(meta) {
 
-        let myRoomlist = [],
-            timestamp = [];
+        let myRoomlist = [];
 
         for (var roomId in meta) {
 
@@ -145,12 +147,10 @@ class App extends React.Component {
 
                         let member = roomUsers[uid];
 
-                        timestamp.push(roomData.timestamp)
-
                         myRoomlist.push(
 
                             <li key={roomId} className="roomlist-item" index={roomData.timestamp}>
-                                <button id={roomId} className="roomlist-btn" onClick={this.ShowTalk.bind(this)}>
+                                <button id={roomId} className={"roomlist-btn" + ( member.readed ? " readed" : "" )} onClick={this.ShowTalk.bind(this)}>
                                     <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
                                     <div className="roomlist-wrap">
                                         <p className="roomlist-name">{member.name}</p>
@@ -208,13 +208,13 @@ class App extends React.Component {
         this.actions = this.props.actions;
         this.history = this.props.history;
 
-        let myRoomList = null;
+        let myRoomList = [];
 
         if( this.state.myAccount && this.state.meta ) {
 
             myRoomList = this.GetMyRoomList(this.state.meta);
 
-            if( !myRoomList[0] && this.uid !== "qIGf0AzOcIgsTOF1uhYOjEMACZm1" ) {
+            if( !myRoomList[0] && this.state.myAccount.uid !== "qIGf0AzOcIgsTOF1uhYOjEMACZm1" ) {
 
                 myRoomList = this.GetNewTalk(
                     "room_" + GetUniqueStr(),
@@ -227,8 +227,6 @@ class App extends React.Component {
             }
 
         }
-
-        // console.log(this.state);
 
         return (
             <div className="page" ref="page">

@@ -37,14 +37,34 @@ class App extends React.Component {
 
         });
 
-        this.GetMessageData()
+        this.GetMessageData();
+        this.Readed();
 
     }
 
     componentWillUpdate() {}
-    componentDidUpdate() {}
+    componentDidUpdate() {
+        this.Readed();
+    }
+
+    Readed() {
+
+        //相手のアカウントに対して "readed" をつける必要がある。
+        if(this.state.meta && window.auth.currentUser) {
+            let members = this.state.meta[this.roomId].members;
+            for (var uid in members) {
+                if( uid !== window.auth.currentUser.uid ) {
+                    var updates = {};
+                    updates['/members/' + uid + "/readed"] = true;
+                    this.metaRef.update(updates);
+                }
+            }
+        }
+
+    }
 
     SetScroll() {
+        if(!this.refs.page_scroll) return true;
         this.refs.page_scroll.scrollTop = this.refs.page_scroll.scrollHeight;
     }
 
@@ -151,6 +171,8 @@ class App extends React.Component {
         let roomName = this.GetRoomName(),
             messages = this.GetMessages();
 
+        let myMeta = this.state.meta ? this.state.meta[this.roomId] : null
+
         return (
             <div className="page" ref="page">
 
@@ -177,6 +199,7 @@ class App extends React.Component {
 
                 <Input
                     setScroll={this.SetScroll.bind(this)}
+                    meta={myMeta}
                     metaRef={this.metaRef}
                     messagesRef={this.messagesRef} />
 

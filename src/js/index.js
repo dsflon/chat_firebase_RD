@@ -1,3 +1,8 @@
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
+import 'firebase/storage';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -7,6 +12,10 @@ import reducer from './reducers'
 
 import Root from './_root'
 
+//scss
+import '../scss/style.scss'
+
+
 
 const initialState = {
     myAccount: null,
@@ -15,34 +24,34 @@ const initialState = {
 };
 let store = createStore(reducer,initialState)
 
-//scss
-import '../scss/style.scss'
+const config = {
+  apiKey: "AIzaSyDHqPAR21LP_y8MTQttOUl2rZR_EP0atcQ",
+  authDomain: "chat-3f1a7.firebaseapp.com",
+  databaseURL: "https://chat-3f1a7.firebaseio.com",
+  projectId: "chat-3f1a7",
+  storageBucket: "chat-3f1a7.appspot.com",
+  messagingSenderId: "1092855635066"
+};
+firebase.initializeApp(config);
 
 
 window.onload = () => {
-    initFirebase()
+
+    initFirebase();
+
     ReactDOM.render(
         <Provider store={store}>
             <Root />
         </Provider>,
         document.getElementById('app')
     );
+
 };
 
 function initFirebase() {
-
-    checkSetup();
 
     window.auth = firebase.auth();
     window.database = firebase.database();
     window.storage = firebase.storage();
 
-};
-
-function checkSetup() {
-    if (!window.firebase || !(firebase.app instanceof Function) || !firebase.app().options) {
-        console.error('You have not configured and imported the Firebase SDK. ' +
-        'Make sure you go through the codelab setup instructions and make ' +
-        'sure you are running the codelab using `firebase serve`');
-    }
 };
