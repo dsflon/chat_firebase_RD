@@ -102,7 +102,20 @@ module.exports = {
     },
     devtool: (isDev ? SOURCE_MAP_STYLE : ''),
     devServer: DEV_SERVER,
-    performance: { hints: false }
+    performance: { hints: false },
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /react|react-dom|react-router-dom|redux|react-redux/,
+                    name: "vendor",
+                    chunks: "initial",
+                    enforce: true,
+                },
+            },
+        },
+    }
 
 }
 
