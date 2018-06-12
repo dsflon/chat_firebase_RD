@@ -52,7 +52,7 @@ class Input extends React.Component {
                                         onClick={this.Remove.bind(this)}
                                         data-own={own}
                                         data-id={talkId}
-                                        data-timestamp={thisTalk.timestamp}>×</button> : null;
+                                        data-timestamp={thisTalk.timestamp}></button> : null;
 
                 if( !thisTalk.uid ) return true;
 

@@ -46,9 +46,21 @@
                 }
                 .messages-remove {
                     position: absolute;
-                    top: -6px; left: 40px;
+                    top: -5px; left: 40px;
                     background: none;
-                    color: $black30;
+                    padding: 0;
+                    width: 20px; height: 20px;
+                    &:before, &:after {
+                        content: "";
+                        display: block;
+                        width: 8px; height: 1px;
+                        background: $black30;
+                        position: absolute;
+                        top: 50%; left: 50%;
+
+                    }
+                    &:before { transform: translate(-50%,-50%) rotate(45deg); }
+                    &:after { transform: translate(-50%,-50%) rotate(-45deg); }
                 }
             }
             &:not(.own) {
