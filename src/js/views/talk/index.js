@@ -15,8 +15,6 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-
-
     }
 
     componentDidMount() {
@@ -75,18 +73,43 @@ class App extends React.Component {
 
         let Message = {}, timer;
 
+        let SetMeta = ( text, timestamp) => {
+            let updates = {};
+                updates['/lastMessage'] = text;
+                updates['/timestamp'] = timestamp;
+            this.metaRef.update(updates);
+        }
+        
         let SetMessages = (data) => {
             Message[data.key] = data.val();
             clearTimeout(timer);
             timer = setTimeout( () => {
                 this.actions.Messages(Message);
                 this.SetScroll();
+
+                // Metaに追加
+                SetMeta( Message[data.key].message, Message[data.key].timestamp );
             },1)
+        };
+        
+        let RemoveMessages = (data) => {
+
+            delete Message[data.key];
+            this.actions.Messages(Message);
+            this.SetScroll();
+
+            let keys = Object.keys(Message),
+                length = keys.length,
+                lastMessage = Message[keys[length - 1]];
+
+            // Metaに追加
+            SetMeta( lastMessage.message, lastMessage.timestamp );
         };
 
         this.messagesRef.off();
         this.messagesRef.on('child_added', SetMessages);
         this.messagesRef.on('child_changed', SetMessages);
+        this.messagesRef.on('child_removed', RemoveMessages);
 
     }
 
@@ -152,12 +175,13 @@ class App extends React.Component {
 
                     <section className="f-inner">
                         <div className="page-inner">
-                            
+
                             <Items
                                 ShowThumb={this.ShowThumb.bind(this)}
                                 state={this.state}
-                                actions={this.actions} />
-                            
+                                metaRef={this.metaRef}
+                                messagesRef={this.messagesRef} />
+
                         </div>
                     </section>
 

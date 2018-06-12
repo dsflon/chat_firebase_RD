@@ -7,11 +7,9 @@ class Input extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = { disabled: "disabled" }
     }
 
-    componentWillMount() {}
     componentDidMount() {
 
         this.refs.mess_input.oninput = (e) => {
@@ -25,8 +23,6 @@ class Input extends React.Component {
         this.winheight = window.innerHeight / 2;
 
     }
-    componentWillUpdate() {}
-    componentDidUpdate() {}
 
     Post(e) {
 
@@ -46,6 +42,7 @@ class Input extends React.Component {
                 console.log("post!");
                 this.refs.mess_input.value = "";
                 this.setScroll();
+                this.setState({ disabled: "disabled" });
             }).catch( (error) => {
                 console.error('Error writing new message to Firebase Database', error);
             });
@@ -55,9 +52,8 @@ class Input extends React.Component {
 
                 //// Meta Update
                 let updates = {};
-                    updates['/lastMessage'] = value;
-                    updates['/timestamp'] = new Date().getTime();
-                    updates['/members/' + window.auth.currentUser.uid + '/readed'] = false;
+                    // updates['/lastMessage'] = value;
+                    // updates['/timestamp'] = new Date().getTime();
                     for (var uid in this.meta.members) {
                         updates['/members/' + uid + '/readed'] = false;
                     }

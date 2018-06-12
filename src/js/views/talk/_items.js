@@ -7,6 +7,28 @@ class Input extends React.Component {
 
     constructor(props) {
         super(props);
+        this.removeTimer = null
+    }
+
+    TouchStart(e) {
+
+        let talkId = e.currentTarget.id,
+            own = e.currentTarget.dataset.own,
+            timestamp = e.currentTarget.dataset.timestamp,
+            text = e.currentTarget.querySelectorAll(".messages-mess")[0].textContent;
+
+        if(own === "false") return true;
+
+        this.removeTimer = setTimeout( () => {
+            let res = confirm("削除しますか？");
+            if( res == true ) {
+                this.messagesRef.child(talkId).remove();
+            }
+        }, 1000);
+
+    }
+    TouchEnd() {
+        clearTimeout(this.removeTimer)
     }
 
     GetMessages() {
@@ -30,6 +52,10 @@ class Input extends React.Component {
                     <div
                         id={talkId}
                         key={talkId}
+                        data-own={own}
+                        data-timestamp={thisTalk.timestamp}
+                        onTouchStart={this.TouchStart.bind(this)}
+                        onTouchEnd={this.TouchEnd.bind(this)}
                         className={"messages-item" + (own ? " own" : "")}>
 
                         {thumb}
@@ -56,7 +82,8 @@ class Input extends React.Component {
     render() {
 
         this.state = this.props.state;
-        this.actions = this.props.actions;
+        this.messagesRef = this.props.messagesRef;
+        this.metaRef = this.props.metaRef;
 
         let message = this.GetMessages();
 
