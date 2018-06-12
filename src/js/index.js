@@ -35,6 +35,9 @@ const config = {
 firebase.initializeApp(config);
 
 
+window.LOADING_IMAGE = 'https://www.google.com/images/spin-32.gif';
+
+
 window.onload = () => {
 
     initFirebase();

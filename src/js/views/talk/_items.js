@@ -7,15 +7,13 @@ class Input extends React.Component {
 
     constructor(props) {
         super(props);
-        this.removeTimer = null
+        this.removeTimer = null;
     }
 
     Remove(e) {
 
         let talkId = e.currentTarget.dataset.id,
-            own = e.currentTarget.dataset.own,
-            timestamp = e.currentTarget.dataset.timestamp,
-            text = this.refs["mess_"+talkId].textContent;
+            own = e.currentTarget.dataset.own;
 
         if(own === "false") return true;
 
@@ -25,6 +23,27 @@ class Input extends React.Component {
                 this.messagesRef.child(talkId).remove();
             }
         }, 1000);
+
+    }
+
+    CreateImg(imageUri,talkId) {
+
+        let imgSrc;
+
+        if( imageUri.startsWith('gs://') ) {
+            imgSrc = window.LOADING_IMAGE;
+            window.storage.refFromURL(imageUri).getDownloadURL().then( (src) => {
+                let update = this.state.messages;
+                    update[talkId]["image"] = src;
+                this.actions.Messages(update);
+            });
+        } else {
+            imgSrc = imageUri;
+        }
+
+        return (
+            <figure className="messages-img"><img src={imgSrc} onLoad={this.setScroll} /></figure>
+        );
 
     }
 
@@ -54,6 +73,12 @@ class Input extends React.Component {
                                         data-id={talkId}
                                         data-timestamp={thisTalk.timestamp}></button> : null;
 
+
+                let message = null;
+                if( thisTalk.message ) message = <p className="messages-mess" ref={"mess_"+talkId}>{nl2br(thisTalk.message)}</p>
+                if( thisTalk.image ) message = this.CreateImg(thisTalk.image,talkId);
+
+
                 if( !thisTalk.uid ) return true;
 
                 messageItem.push(
@@ -68,7 +93,7 @@ class Input extends React.Component {
                         <div className="messages-wrap">
                             <div className="messages-inner">
                                 {remove}
-                                <p className="messages-mess" ref={"mess_"+talkId}>{nl2br(thisTalk.message)}</p>
+                                {message}
                                 <span className="messages-time">{TimeStamp(thisTalk.timestamp)}</span>
                             </div>
                         </div>
@@ -87,6 +112,8 @@ class Input extends React.Component {
 
     render() {
 
+        this.setScroll = this.props.setScroll;
+        this.actions = this.props.actions;
         this.state = this.props.state;
         this.messagesRef = this.props.messagesRef;
         this.metaRef = this.props.metaRef;

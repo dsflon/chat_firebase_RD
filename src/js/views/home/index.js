@@ -37,6 +37,7 @@ class App extends React.Component {
                 this.userBtn = <button onClick={Log.Out} className="logout" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>;
                 this.actions.Login({
                     uid: user.uid,
+                    name: user.displayName,
                     thumb: user.photoURL
                 });
 

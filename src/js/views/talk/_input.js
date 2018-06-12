@@ -24,45 +24,74 @@ class Input extends React.Component {
 
     }
 
-    Post(e) {
+    Post(obj,file) {
 
-        e.preventDefault();
+        let postData = {
+            name: window.auth.currentUser.displayName,
+            uid: window.auth.currentUser.uid,
+            thumb: window.auth.currentUser.photoURL || '/images/profile_placeholder.png',
+            timestamp: new Date().getTime()
+        }
+        postData = Object.assign(obj, postData);
 
-        let value = this.refs.mess_input.value;
+        this.messagesRef.push(postData).then( (data) => {
 
-        if (value) {
-
-            this.messagesRef.push({
-                name: window.auth.currentUser.displayName,
-                uid: window.auth.currentUser.uid,
-                message: value,
-                thumb: window.auth.currentUser.photoURL || '/images/profile_placeholder.png',
-                timestamp: new Date().getTime()
-            }).then( () => {
-                console.log("post!");
+            if( postData.message ) {
                 this.refs.mess_input.value = "";
-                this.setScroll();
-                this.setState({ disabled: "disabled" });
-            }).catch( (error) => {
-                console.error('Error writing new message to Firebase Database', error);
-            });
+                console.log("post message!");
+            }
 
+            if( postData.image && file ) {
 
-            if( this.meta ) {
+                let filePath = this.roomId + '/' + window.auth.currentUser.uid + '/' + Date.now() + '/' + file.name;
+                let uploadTask = window.storage.ref(filePath).put(file, {'contentType': file.type});
 
-                //// Meta Update
-                let updates = {};
-                    // updates['/lastMessage'] = value;
-                    // updates['/timestamp'] = new Date().getTime();
-                    for (var uid in this.meta.members) {
-                        updates['/members/' + uid + '/readed'] = false;
-                    }
-
-                this.metaRef.update(updates);
+                uploadTask.on('state_changed', null, (error) => {
+                    console.error('There was an error uploading a file to Firebase Storage:', error);
+                }, () => {
+                    let filePath = uploadTask.snapshot.metadata.fullPath;
+                    data.update({
+                        image: window.storage.ref(filePath).toString()
+                    });
+                    console.log("post image!");
+                });
 
             }
 
+            this.setScroll();
+            this.setState({ disabled: "disabled" });
+
+        }).catch( (error) => {
+            console.error('Error writing new message to Firebase Database', error);
+        });
+
+        if( this.meta ) {
+
+            //// Meta Update
+            let updates = {};
+            for (var uid in this.meta.members) {
+                updates['/members/' + uid + '/readed'] = false;
+            }
+
+            this.metaRef.update(updates);
+
         }
+
+    }
+
+    PostMessage(e) {
+
+        e.preventDefault();
+        let value = this.refs.mess_input.value;
+        if (value) this.Post({ message: value })
+
+    }
+
+    PostImage(e) {
+
+        e.preventDefault();
+        let file = e.target.files[0];
+        if (file.type.match('image.*')) this.Post({ image: window.LOADING_IMAGE },file)
 
     }
 
@@ -75,13 +104,14 @@ class Input extends React.Component {
 
         this.setScroll = this.props.setScroll;
         this.meta = this.props.meta;
+        this.roomId = this.props.roomId;
         this.messagesRef = this.props.messagesRef;
         this.metaRef = this.props.metaRef;
 
         return (
             <footer id="from">
                 <form id="from-image">
-                    <input id="image-input" ref="image_input" type="file" accept="image/*,capture=camera" />
+                    <input id="image-input" ref="image_input" onChange={this.PostImage.bind(this)} type="file" accept="image/*,capture=camera" />
                     <label id="image-btn" htmlFor="image-input"><span>Image</span></label>
                 </form>
                 <form id="from-mess">
@@ -98,7 +128,7 @@ class Input extends React.Component {
                         ref="mess_submit"
                         type="button"
                         disabled={this.state.disabled}
-                        onClick={this.Post.bind(this)}>
+                        onClick={this.PostMessage.bind(this)}>
                         Send
                     </button>
                 </form>

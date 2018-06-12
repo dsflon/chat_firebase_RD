@@ -75,11 +75,11 @@ class App extends React.Component {
 
         let SetMeta = ( text, timestamp) => {
             let updates = {};
-                updates['/lastMessage'] = text;
+                updates['/lastMessage'] = text ? text : "画像を送信しました";
                 updates['/timestamp'] = timestamp;
             this.metaRef.update(updates);
         }
-        
+
         let SetMessages = (data) => {
             Message[data.key] = data.val();
             clearTimeout(timer);
@@ -91,7 +91,7 @@ class App extends React.Component {
                 SetMeta( Message[data.key].message, Message[data.key].timestamp );
             },1)
         };
-        
+
         let RemoveMessages = (data) => {
 
             delete Message[data.key];
@@ -177,7 +177,9 @@ class App extends React.Component {
                         <div className="page-inner">
 
                             <Items
+                                setScroll={this.SetScroll.bind(this)}
                                 ShowThumb={this.ShowThumb.bind(this)}
+                                actions={this.actions}
                                 state={this.state}
                                 metaRef={this.metaRef}
                                 messagesRef={this.messagesRef} />
@@ -196,6 +198,7 @@ class App extends React.Component {
                 </div>
 
                 <Input
+                    roomId={this.roomId}
                     setScroll={this.SetScroll.bind(this)}
                     meta={myMeta}
                     metaRef={this.metaRef}
