@@ -1,10 +1,12 @@
-import firebase from 'firebase/app';
 import React from 'react';
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as ActionCreators from '../../actions';
 
+import Items from './_items';
+
+import Log from '../../common/_login_out';
 import Fetch from '../../common/_fetch';
 import TimeStamp from '../../common/_timestamp';
 import GetUniqueStr from '../../common/_getUniqueStr';
@@ -18,15 +20,21 @@ class App extends React.Component {
         this.userBtn = <button className="logout"></button>;
     }
 
-    componentWillMount() {
-    }
     componentDidMount() {
+        this.CheckLogin();
+    }
+
+    componentDidUpdate() {
+        if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
+    }
+
+    CheckLogin() {
 
         window.auth.onAuthStateChanged( (user) => {
 
             if (user) { // User is signed in!
 
-                this.userBtn = <button onClick={this.Logout.bind(this)} className="logout" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>;
+                this.userBtn = <button onClick={Log.Out} className="logout" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>;
                 this.actions.Login({
                     uid: user.uid,
                     thumb: user.photoURL
@@ -38,19 +46,12 @@ class App extends React.Component {
 
             } else { // User is signed out!
 
-                this.userBtn = <button onClick={this.Login.bind(this)} className="login">login</button>;
+                this.userBtn = <button onClick={Log.In} className="login">login</button>;
                 this.actions.Login(null);
 
             }
 
         })
-
-    }
-
-    componentWillUpdate() {
-    }
-    componentDidUpdate() {
-        if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
     }
 
     ShowTalk(e) {
@@ -115,134 +116,33 @@ class App extends React.Component {
 
     }
 
-    GetNewTalk(roomId,member) {
-
-        return (
-            <li key={roomId} className="roomlist-item">
-                <button id={roomId} className="roomlist-btn" onClick={this.CreateNewTalk.bind(this)}>
-                    <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
-                    <div className="roomlist-wrap">
-                        <p className="roomlist-name">{member.name + "と会話を始める"}</p>
-                    </div>
-                </button>
-            </li>
-        )
-
-    }
-
-    GetMyRoomList(meta) {
-
-        let myRoomlist = [];
-
-        for (var roomId in meta) {
-
-            let roomData = meta[roomId],
-                roomUsers = roomData.members;
-
-            if( roomUsers.hasOwnProperty(this.state.myAccount.uid) ) {
-
-                for (var uid in roomUsers) {
-
-                    if( uid !== this.state.myAccount.uid ) {
-
-                        let member = roomUsers[uid];
-
-                        myRoomlist.push(
-
-                            <li key={roomId} className="roomlist-item" index={roomData.timestamp}>
-                                <button id={roomId} className={"roomlist-btn" + ( member.readed ? " readed" : "" )} onClick={this.ShowTalk.bind(this)}>
-                                    <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
-                                    <div className="roomlist-wrap">
-                                        <p className="roomlist-name">{member.name}</p>
-                                        <p className="roomlist-mess">{roomData.lastMessage}</p>
-                                        <p className="roomlist-time">{TimeStamp(roomData.timestamp)}</p>
-                                    </div>
-                                </button>
-                            </li>
-
-                        );
-
-                    }//if
-
-                }//for
-
-            }//if
-
-        }//for
-
-        //タイムスタンプ順に並べる
-        myRoomlist.sort(
-            function(a,b){
-                return (a.props.index < b.props.index ? 1 : -1);
-            }
-        );
-        return myRoomlist;
-
-    }
-
-    Login() {
-
-        let provider = new firebase.auth.GoogleAuthProvider();
-        window.auth.signInWithPopup(provider).then( (result) => {
-            console.log("ログインしました。");
-        }).catch( (error) => {
-            alert(error.message);
-        });
-
-    }
-
-    Logout() {
-
-        let res = confirm("ログアウトしますか？");
-        if( res == true ) {
-            window.auth.signOut().then( () => {
-                console.log("ログアウトしました。");
-            });
-        }
-
-    }
-
     render() {
 
         this.state = this.props.state;
         this.actions = this.props.actions;
         this.history = this.props.history;
 
-        let myRoomList = [];
-
-        if( this.state.myAccount && this.state.meta ) {
-
-            myRoomList = this.GetMyRoomList(this.state.meta);
-
-            if( !myRoomList[0] && this.state.myAccount.uid !== "qIGf0AzOcIgsTOF1uhYOjEMACZm1" ) {
-
-                myRoomList = this.GetNewTalk(
-                    "room_" + GetUniqueStr(),
-                    {
-                        "name": "斎藤大輝",
-                        "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
-                    }
-                )
-
-            }
-
-        }
-
         return (
             <div className="page" ref="page">
+
                 <header>
                     <h1>Talk</h1>
                     <div className="user">
                         {this.userBtn}
                     </div>
                 </header>
+
                 <div className="page-scroll" ref="page_scroll">
 
-                    <section id="page-select" className="f-inner">
+                    <section className="f-inner">
 
                         <div className="page-inner">
 
-                            <ul className="roomlist">{myRoomList}</ul>
+                            <Items
+                                ShowTalk={this.ShowTalk.bind(this)}
+                                CreateNewTalk={this.CreateNewTalk.bind(this)}
+                                state={this.state}
+                                actions={this.actions} />
 
                         </div>
 

@@ -7,17 +7,18 @@ import * as ActionCreators from '../../actions';
 
 import Fetch from '../../common/_fetch';
 import TimeStamp from '../../common/_timestamp';
-import nl2br from '../../common/_nl2br';
 
 import Input from './_input';
+import Items from './_items';
 
 class App extends React.Component {
 
     constructor(props) {
         super(props);
+
+
     }
 
-    componentWillMount() {}
     componentDidMount() {
 
         // リロードしたときの処理
@@ -42,7 +43,6 @@ class App extends React.Component {
 
     }
 
-    componentWillUpdate() {}
     componentDidUpdate() {
         this.Readed();
     }
@@ -115,62 +115,27 @@ class App extends React.Component {
         }
 
     }
-    GetMessages() {
 
-        if( this.state.myAccount && this.state.messages ) {
-
-            let messageItem = []
-
-            for (var talkId in this.state.messages) {
-
-                let thisTalk = this.state.messages[talkId];
-                let own = thisTalk.uid === this.state.myAccount.uid;
-
-                let thumb = !own ? <figure className="messages-thumb" style={ thisTalk.thumb ? { "backgroundImage": "url("+ thisTalk.thumb +")" } : null }></figure> : null;
-
-                if( !thisTalk.uid ) return true;
-
-                messageItem.push(
-
-                    <div
-                        id={talkId}
-                        key={talkId}
-                        className={"messages-item" + (own ? " own" : "")}>
-
-                        {thumb}
-
-                        <div className="messages-wrap">
-                            <div className="messages-inner">
-                                <p className="messages-mess">{nl2br(thisTalk.message)}</p>
-                                <span className="messages-time">{TimeStamp(thisTalk.timestamp)}</span>
-                            </div>
-                        </div>
-
-                    </div>
-
-                );
-
-            }
-
-            return messageItem;
-
-        }
-
+    ShowThumb(e) {
+        let thumb = e.currentTarget.dataset.thumb,
+            name = e.currentTarget.dataset.name;
+        this.refs.user_thumb.style.backgroundImage = "url(" + thumb + ")";
+        this.refs.user_name.innerHTML = name;
+        this.refs.user_detail.classList.add("show");
+    }
+    HideThumb(e) {
+        this.refs.user_detail.classList.remove("show");
     }
 
     render() {
 
         this.state = this.props.state;
         this.actions = this.props.actions;
-        this.match = this.props.match;
         this.history = this.props.history;
 
-        this.roomId = this.match.params.id;
-        this.messages = this.state.messages;
+        this.roomId = this.props.match.params.id;
 
-        let roomName = this.GetRoomName(),
-            messages = this.GetMessages();
-
+        let roomName = this.GetRoomName();
         let myMeta = this.state.meta ? this.state.meta[this.roomId] : null
 
         return (
@@ -185,16 +150,25 @@ class App extends React.Component {
 
                 <div className="page-scroll" ref="page_scroll">
 
-                    <section id="page-select" className="f-inner">
-
+                    <section className="f-inner">
                         <div className="page-inner">
-                            <div id="messages">
-                                {messages}
-                            </div>
+                            
+                            <Items
+                                ShowThumb={this.ShowThumb.bind(this)}
+                                state={this.state}
+                                actions={this.actions} />
+                            
                         </div>
-
                     </section>
 
+                </div>
+
+                <div className="user-detail" ref="user_detail">
+                    <div className="user-bg" onClick={this.HideThumb.bind(this)}></div>
+                    <div className="user-wrap" ref="user_wrap">
+                        <figure className="user-thumb" ref="user_thumb"></figure>
+                        <p className="user-name" ref="user_name">user name</p>
+                    </div>
                 </div>
 
                 <Input
