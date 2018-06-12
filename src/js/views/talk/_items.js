@@ -10,12 +10,12 @@ class Input extends React.Component {
         this.removeTimer = null
     }
 
-    TouchStart(e) {
+    Remove(e) {
 
-        let talkId = e.currentTarget.id,
+        let talkId = e.currentTarget.dataset.id,
             own = e.currentTarget.dataset.own,
             timestamp = e.currentTarget.dataset.timestamp,
-            text = e.currentTarget.querySelectorAll(".messages-mess")[0].textContent;
+            text = this.refs["mess_"+talkId].textContent;
 
         if(own === "false") return true;
 
@@ -26,9 +26,6 @@ class Input extends React.Component {
             }
         }, 1000);
 
-    }
-    TouchEnd() {
-        clearTimeout(this.removeTimer)
     }
 
     GetMessages() {
@@ -43,7 +40,19 @@ class Input extends React.Component {
                 let own = thisTalk.uid === this.state.myAccount.uid;
 
                 let thumbStyle = thisTalk.thumb ? { "backgroundImage": "url("+ thisTalk.thumb +")" } : null;
-                let thumb = !own ? <button className="messages-thumb" data-name={thisTalk.name} data-thumb={thisTalk.thumb} style={ thumbStyle } onClick={this.props.ShowThumb}></button> : null;
+                let thumb = !own ? <button
+                                        className="messages-thumb"
+                                        data-name={thisTalk.name}
+                                        data-thumb={thisTalk.thumb}
+                                        style={ thumbStyle }
+                                        onClick={this.props.ShowThumb}></button> : null;
+
+                let remove = own ? <button
+                                        className="messages-remove"
+                                        onClick={this.Remove.bind(this)}
+                                        data-own={own}
+                                        data-id={talkId}
+                                        data-timestamp={thisTalk.timestamp}>×</button> : null;
 
                 if( !thisTalk.uid ) return true;
 
@@ -52,17 +61,14 @@ class Input extends React.Component {
                     <div
                         id={talkId}
                         key={talkId}
-                        data-own={own}
-                        data-timestamp={thisTalk.timestamp}
-                        onTouchStart={this.TouchStart.bind(this)}
-                        onTouchEnd={this.TouchEnd.bind(this)}
                         className={"messages-item" + (own ? " own" : "")}>
 
                         {thumb}
 
                         <div className="messages-wrap">
                             <div className="messages-inner">
-                                <p className="messages-mess">{nl2br(thisTalk.message)}</p>
+                                {remove}
+                                <p className="messages-mess" ref={"mess_"+talkId}>{nl2br(thisTalk.message)}</p>
                                 <span className="messages-time">{TimeStamp(thisTalk.timestamp)}</span>
                             </div>
                         </div>

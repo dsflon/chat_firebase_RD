@@ -44,6 +44,12 @@
                     bottom: 0;
                     width: 70px;
                 }
+                .messages-remove {
+                    position: absolute;
+                    top: -6px; left: 40px;
+                    background: none;
+                    color: $black30;
+                }
             }
             &:not(.own) {
                 justify-content: flex-start;
