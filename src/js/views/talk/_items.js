@@ -7,22 +7,27 @@ class Input extends React.Component {
 
     constructor(props) {
         super(props);
-        this.removeTimer = null;
     }
 
-    Remove(e) {
+    Remove(thisTalk,e) {
 
-        let talkId = e.currentTarget.dataset.id,
-            own = e.currentTarget.dataset.own;
+        let talkId = e.currentTarget.dataset.id;
 
-        if(own === "false") return true;
+        let res = confirm("削除しますか？");
+        if( res == true ) {
 
-        this.removeTimer = setTimeout( () => {
-            let res = confirm("削除しますか？");
-            if( res == true ) {
-                this.messagesRef.child(talkId).remove();
+            this.messagesRef.child(talkId).remove();
+
+            if(thisTalk.filePath) {
+                let desertRef = window.storage.ref(thisTalk.filePath);
+                desertRef.delete().then( () => {
+                    console.log("画像を削除しました。");
+                }).catch( (error) => {
+                    console.error(error);
+                });
             }
-        }, 1000);
+
+        }
 
     }
 
@@ -32,9 +37,12 @@ class Input extends React.Component {
 
         if( imageUri.startsWith('gs://') ) {
             imgSrc = window.LOADING_IMAGE;
-            window.storage.refFromURL(imageUri).getDownloadURL().then( (src) => {
+
+            let strageRefURL = window.storage.refFromURL(imageUri);
+            strageRefURL.getDownloadURL().then( (src) => {
                 let update = this.state.messages;
                     update[talkId]["image"] = src;
+                    update[talkId]["filePath"] = strageRefURL.fullPath;
                 this.actions.Messages(update);
             });
         } else {
@@ -58,20 +66,17 @@ class Input extends React.Component {
                 let thisTalk = this.state.messages[talkId];
                 let own = thisTalk.uid === this.state.myAccount.uid;
 
-                let thumbStyle = thisTalk.thumb ? { "backgroundImage": "url("+ thisTalk.thumb +")" } : null;
                 let thumb = !own ? <button
                                         className="messages-thumb"
                                         data-name={thisTalk.name}
                                         data-thumb={thisTalk.thumb}
-                                        style={ thumbStyle }
+                                        style={ thisTalk.thumb ? { "backgroundImage": "url("+ thisTalk.thumb +")" } : null }
                                         onClick={this.props.ShowThumb}></button> : null;
 
                 let remove = own ? <button
                                         className="messages-remove"
-                                        onClick={this.Remove.bind(this)}
-                                        data-own={own}
-                                        data-id={talkId}
-                                        data-timestamp={thisTalk.timestamp}></button> : null;
+                                        onClick={this.Remove.bind(this,thisTalk)}
+                                        data-id={talkId}></button> : null;
 
 
                 let message = null;
