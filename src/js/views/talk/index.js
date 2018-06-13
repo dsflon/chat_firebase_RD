@@ -24,16 +24,11 @@ class App extends React.Component {
 
         // ログアウト時のリダイレクト
         window.auth.onAuthStateChanged( (user) => {
-
             if(user) {
-                this.actions.Login({
-                    uid: user.uid,
-                    thumb: user.photoURL
-                });
+                this.actions.Login({ uid: user.uid, thumb: user.photoURL });
             } else {
                 this.history.push("/");
             }
-
         });
 
         this.GetMessageData();
@@ -128,15 +123,11 @@ class App extends React.Component {
     }
 
     GetRoomName() {
-
-        if( this.state.messages ) {
-
+        if( this.state.messages && this.state.meta ) {
             let roomData = this.GetMyRoomData(this.state.meta[this.roomId]);
             this.roomName = roomData.name;
             return roomData.name;
-
         }
-
     }
 
     ShowThumb(e) {

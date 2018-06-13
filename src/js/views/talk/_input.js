@@ -1,8 +1,5 @@
 import React from 'react';
 
-import TimeStamp from '../../common/_timestamp';
-
-
 class Input extends React.Component {
 
     constructor(props) {
@@ -36,22 +33,24 @@ class Input extends React.Component {
 
         this.messagesRef.push(postData).then( (data) => {
 
+            //テキストのとき
             if( postData.message ) {
                 this.refs.mess_input.value = "";
                 console.log("post message!");
             }
 
+            //画像のとき
             if( postData.image && file ) {
 
-                let filePath = this.roomId + '/' + window.auth.currentUser.uid + '/' + Date.now() + '/' + file.name;
-                let uploadTask = window.storage.ref(filePath).put(file, {'contentType': file.type});
+                let filePath = this.roomId + '/' + window.auth.currentUser.uid + '/' + Date.now() + '/' + file.name,
+                    storageRef = window.storage.ref(filePath),
+                    uploadTask = storageRef.put(file, {'contentType': file.type});
 
                 uploadTask.on('state_changed', null, (error) => {
                     console.error('There was an error uploading a file to Firebase Storage:', error);
                 }, () => {
-                    let filePath = uploadTask.snapshot.metadata.fullPath;
-                    data.update({
-                        image: window.storage.ref(filePath).toString()
+                    storageRef.getDownloadURL().then( (src) => {
+                        data.update({ image: src });
                     });
                     console.log("post image!");
                 });
@@ -65,9 +64,10 @@ class Input extends React.Component {
             console.error('Error writing new message to Firebase Database', error);
         });
 
-        if( this.meta ) {
+        ////
 
-            //// Meta Update
+        if( this.meta ) { // Meta Update
+
             let updates = {};
             for (var uid in this.meta.members) {
                 updates['/members/' + uid + '/readed'] = false;
@@ -91,7 +91,7 @@ class Input extends React.Component {
 
         e.preventDefault();
         let file = e.target.files[0];
-        if (file.type.match('image.*')) this.Post({ image: window.LOADING_IMAGE },file)
+        if (file.type.match('image.*')) this.Post({ image: "pre_upload" },file);
 
     }
 

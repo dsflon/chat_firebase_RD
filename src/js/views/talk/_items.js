@@ -33,24 +33,26 @@ class Input extends React.Component {
 
     CreateImg(imageUri,talkId) {
 
-        let imgSrc;
+        // let imgSrc = window.LOADING_IMAGE;
+        // console.log(imageUri);
+        //
+        // if( imageUri.startsWith('gs://') ) {
+        //     imgSrc = window.LOADING_IMAGE;
+        //     // let strageRefURL = window.storage.refFromURL(imageUri);
+        //     // strageRefURL.getDownloadURL().then( (src) => {
+        //     //     let update = this.state.messages;
+        //     //         update[talkId]["image"] = src;
+        //     //         update[talkId]["filePath"] = strageRefURL.fullPath;
+        //     //     this.actions.Messages(update);
+        //     // });
+        // } else {
+        //     imgSrc = imageUri;
+        // }
 
-        if( imageUri.startsWith('gs://') ) {
-            imgSrc = window.LOADING_IMAGE;
-
-            let strageRefURL = window.storage.refFromURL(imageUri);
-            strageRefURL.getDownloadURL().then( (src) => {
-                let update = this.state.messages;
-                    update[talkId]["image"] = src;
-                    update[talkId]["filePath"] = strageRefURL.fullPath;
-                this.actions.Messages(update);
-            });
-        } else {
-            imgSrc = imageUri;
-        }
-
+        let img = imageUri != "pre_upload" ? <img src={imageUri} onLoad={this.setScroll} /> : null;
+        
         return (
-            <figure className="messages-img"><img src={imgSrc} onLoad={this.setScroll} /></figure>
+            <figure className="messages-img">{img}</figure>
         );
 
     }
@@ -78,10 +80,8 @@ class Input extends React.Component {
                                         onClick={this.Remove.bind(this,thisTalk)}
                                         data-id={talkId}></button> : null;
 
-
-                let message = null;
-                if( thisTalk.message ) message = <p className="messages-mess" ref={"mess_"+talkId}>{nl2br(thisTalk.message)}</p>
-                if( thisTalk.image ) message = this.CreateImg(thisTalk.image,talkId);
+                let message = thisTalk.message ? <p className="messages-mess" ref={"mess_"+talkId}>{nl2br(thisTalk.message)}</p> : null,
+                    image = thisTalk.image ? this.CreateImg(thisTalk.image,talkId) : null;
 
 
                 if( !thisTalk.uid ) return true;
@@ -99,6 +99,7 @@ class Input extends React.Component {
                             <div className="messages-inner">
                                 {remove}
                                 {message}
+                                {image}
                                 <span className="messages-time">{TimeStamp(thisTalk.timestamp)}</span>
                             </div>
                         </div>
@@ -123,7 +124,7 @@ class Input extends React.Component {
         this.messagesRef = this.props.messagesRef;
         this.metaRef = this.props.metaRef;
 
-        let message = this.GetMessages();
+        let message = this.state.messages ? this.GetMessages() : null;
 
         return (
             <div id="messages">
