@@ -178,4 +178,62 @@
     }//#from
 
 
+    .user-detail, .image-detail {
+        pointer-events: none;
+        &.show {
+            pointer-events: inherit;
+            .bg { opacity: 1; }
+            .user-wrap { opacity: 1; transform: translate(-50%,-50%) scale(1,1); }
+        }
+        .bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(#000,0.2);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+    }
+    .image-detail {
+        .image-src {
+            position: fixed;
+            width: 90%;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            transition: all 0.3s ease;
+            opacity: 0;
+            z-index: 1000;
+        }
+        &.show .image-src { opacity: 1; transform: translate(-50%,-50%) scale(1,1); }
+    }
+    .user-detail {
+        &.show .user-wrap { opacity: 1; transform: translate(-50%,-50%) scale(1,1); }
+        .user-wrap {
+            position: fixed;
+            width: 90%;
+            max-width: 320px;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%) scale(0.98,0.98);
+            z-index: 1000;
+            opacity: 0;
+            background: #FFF;
+            transition: all 0.3s ease;
+            .user-thumb {
+                width: 100%; height: 0;
+                padding-bottom: 100%;
+                background-position: center;
+                background-size: cover;
+                background-image: url(/images/profile_placeholder.png);
+            }
+            .user-name {
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                line-height: 1;
+                padding: 30px 20px;
+            }
+        }
+    }
+
 }//.fw

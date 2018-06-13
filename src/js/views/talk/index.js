@@ -130,15 +130,26 @@ class App extends React.Component {
         }
     }
 
-    ShowThumb(e) {
+    ShowUserDetail(e) {
         let thumb = e.currentTarget.dataset.thumb,
             name = e.currentTarget.dataset.name;
         this.refs.user_thumb.style.backgroundImage = "url(" + thumb + ")";
         this.refs.user_name.innerHTML = name;
         this.refs.user_detail.classList.add("show");
     }
-    HideThumb(e) {
+    HideUserDetail(e) {
         this.refs.user_detail.classList.remove("show");
+    }
+
+    ShowImageDetail(e) {
+        this.refs.image_src.src = "";
+        this.refs.image_src.src = e.currentTarget.src;
+        setTimeout( () => {
+            this.refs.image_detail.classList.add("show");
+        },100 )
+    }
+    HideImageDetail(e) {
+        this.refs.image_detail.classList.remove("show");
     }
 
     render() {
@@ -169,7 +180,8 @@ class App extends React.Component {
 
                             <Items
                                 setScroll={this.SetScroll.bind(this)}
-                                ShowThumb={this.ShowThumb.bind(this)}
+                                ShowUserDetail={this.ShowUserDetail.bind(this)}
+                                ShowImageDetail={this.ShowImageDetail.bind(this)}
                                 actions={this.actions}
                                 state={this.state}
                                 metaRef={this.metaRef}
@@ -181,11 +193,16 @@ class App extends React.Component {
                 </div>
 
                 <div className="user-detail" ref="user_detail">
-                    <div className="user-bg" onClick={this.HideThumb.bind(this)}></div>
+                    <div className="bg" onClick={this.HideUserDetail.bind(this)}></div>
                     <div className="user-wrap" ref="user_wrap">
                         <figure className="user-thumb" ref="user_thumb"></figure>
                         <p className="user-name" ref="user_name">user name</p>
                     </div>
+                </div>
+
+                <div className="image-detail" ref="image_detail">
+                    <div className="bg" onClick={this.HideImageDetail.bind(this)}></div>
+                    <img className="image-src" ref="image_src" />
                 </div>
 
                 <Input

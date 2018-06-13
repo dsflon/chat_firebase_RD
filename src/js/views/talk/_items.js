@@ -49,8 +49,8 @@ class Input extends React.Component {
         //     imgSrc = imageUri;
         // }
 
-        let img = imageUri != "pre_upload" ? <img src={imageUri} onLoad={this.setScroll} /> : null;
-        
+        let img = imageUri != "pre_upload" ? <img onClick={this.props.ShowImageDetail} src={imageUri} onLoad={this.setScroll} /> : null;
+
         return (
             <figure className="messages-img">{img}</figure>
         );
@@ -73,7 +73,7 @@ class Input extends React.Component {
                                         data-name={thisTalk.name}
                                         data-thumb={thisTalk.thumb}
                                         style={ thisTalk.thumb ? { "backgroundImage": "url("+ thisTalk.thumb +")" } : null }
-                                        onClick={this.props.ShowThumb}></button> : null;
+                                        onClick={this.props.ShowUserDetail}></button> : null;
 
                 let remove = own ? <button
                                         className="messages-remove"
