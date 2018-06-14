@@ -72,7 +72,7 @@ class Items extends React.Component {
                 return (a.props.index < b.props.index ? 1 : -1);
             }
         );
-        
+
         return myRoomlist;
 
     }

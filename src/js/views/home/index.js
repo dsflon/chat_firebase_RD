@@ -22,10 +22,32 @@ class App extends React.Component {
 
     componentDidMount() {
         this.CheckLogin();
+
     }
 
     componentDidUpdate() {
+
         if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
+
+        if( this.state.meta ) {
+
+            // this.ChatIndexDB.chatDB.onsuccess = (e) => {
+            //
+            //     this.ChatIndexDB.db = e.target.result;
+            //
+            //     let stores = e.target.result.objectStoreNames;
+            //         stores = Object.values(stores);
+            //
+            //     for (var roomId in this.state.meta) {
+            //         if (stores.indexOf(roomId) == -1){
+            //             this.ChatIndexDB.Set(roomId);
+            //         }
+            //     }
+            //
+            // }
+
+        }
+
     }
 
     CheckLogin() {
@@ -62,6 +84,8 @@ class App extends React.Component {
         let id = e.currentTarget.id;
         if( id !== prevId ) this.actions.Messages(null);
         this.history.push("/talk/"+id);
+
+        window.ChatIndexDB.Set(id);
 
         prevId = id;
 

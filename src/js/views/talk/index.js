@@ -14,7 +14,9 @@ import Items from './_items';
 class App extends React.Component {
 
     constructor(props) {
+
         super(props);
+
     }
 
     componentDidMount() {
@@ -33,7 +35,6 @@ class App extends React.Component {
 
         this.GetMessageData();
         this.Readed();
-
     }
 
     componentDidUpdate() {
