@@ -142,11 +142,13 @@ class App extends React.Component {
     }
 
     ShowImageDetail(e) {
-        this.refs.image_src.src = "";
-        this.refs.image_src.src = e.currentTarget.src;
+        this.refs.image_src.style.backgroundImage = null;
+        this.refs.image_download.href = null;
+        this.refs.image_src.style.backgroundImage = "url(" + e.currentTarget.src + ")";
+        this.refs.image_download.href = e.currentTarget.src;
         setTimeout( () => {
             this.refs.image_detail.classList.add("show");
-        },100 )
+        },1 )
     }
     HideImageDetail(e) {
         this.refs.image_detail.classList.remove("show");
@@ -201,8 +203,10 @@ class App extends React.Component {
                 </div>
 
                 <div className="image-detail" ref="image_detail">
-                    <div className="bg" onClick={this.HideImageDetail.bind(this)}></div>
-                    <img className="image-src" ref="image_src" />
+                    <button className="close" onClick={this.HideImageDetail.bind(this)}></button>
+                    <a className="download" ref="image_download" download target="_blank">download</a>
+                    <div className="bg"></div>
+                    <figure className="image-src"><span ref="image_src"></span></figure>
                 </div>
 
                 <Input

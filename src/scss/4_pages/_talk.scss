@@ -198,14 +198,52 @@
     .image-detail {
         .image-src {
             position: fixed;
-            width: 90%;
+            width: 100%; height: 80%;
             top: 50%; left: 50%;
             transform: translate(-50%,-50%);
             transition: all 0.3s ease;
             opacity: 0;
             z-index: 1000;
+            span {
+                position: absolute;
+                width: 100%; height: 100%;
+                background-position: center;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
         }
+        .close {
+            position: fixed;
+            width: 40px; height: 40px;
+            top: 0; left: 0;
+            z-index: 1000;
+            color: #FFF;
+            font-size: 30px;
+            background: none;
+            opacity: 0;
+            &:before, &:after {
+                content: "";
+                display: block;
+                width: 20px; height: 1px;
+                background: #FFF;
+                position: absolute;
+                top: 50%; left: 50%;
+            }
+            &:before { transform: translate(-50%,-50%) rotate(45deg); }
+            &:after { transform: translate(-50%,-50%) rotate(-45deg); }
+        }
+        .download {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            z-index: 1000;
+            color: #FFF;
+            opacity: 0;
+            line-height: 1;
+        }
+        .bg { background: #000; }
         &.show .image-src { opacity: 1; transform: translate(-50%,-50%) scale(1,1); }
+        &.show .close { opacity: 1; }
+        &.show .download { opacity: 1; }
     }
     .user-detail {
         &.show .user-wrap { opacity: 1; transform: translate(-50%,-50%) scale(1,1); }

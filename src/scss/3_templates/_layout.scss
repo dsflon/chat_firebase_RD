@@ -10,7 +10,7 @@
     line-height: $line-height_base;
 
     input[type="text"] { font-size: 16px; }
-    button { outline: none; }
+    button { outline: none; padding: 0; margin: 0; }
 
     .f-inner {
         max-width: 768px;

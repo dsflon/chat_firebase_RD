@@ -33,22 +33,6 @@ class Input extends React.Component {
 
     CreateImg(imageUri,talkId) {
 
-        // let imgSrc = window.LOADING_IMAGE;
-        // console.log(imageUri);
-        //
-        // if( imageUri.startsWith('gs://') ) {
-        //     imgSrc = window.LOADING_IMAGE;
-        //     // let strageRefURL = window.storage.refFromURL(imageUri);
-        //     // strageRefURL.getDownloadURL().then( (src) => {
-        //     //     let update = this.state.messages;
-        //     //         update[talkId]["image"] = src;
-        //     //         update[talkId]["filePath"] = strageRefURL.fullPath;
-        //     //     this.actions.Messages(update);
-        //     // });
-        // } else {
-        //     imgSrc = imageUri;
-        // }
-
         let img = imageUri != "pre_upload" ? <img onClick={this.props.ShowImageDetail} src={imageUri} onLoad={this.setScroll} /> : null;
 
         return (
