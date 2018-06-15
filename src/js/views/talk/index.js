@@ -14,15 +14,34 @@ import Items from './_items';
 class App extends React.Component {
 
     constructor(props) {
-
         super(props);
 
+        this.imagesDB = {};
     }
 
+    componentWillMount() {
+        this.roomId = this.props.match.params.id;
+    }
     componentDidMount() {
 
         // リロードしたときの処理
         if( !this.state.meta ) Fetch(this.actions);
+
+        window.ChatIndexDB.GetAll(this.roomId,(e) => {
+
+            let result = e.target.result;
+            if (!!result == false) return;
+
+            let blob = result.value.blob,
+                URL = window.URL || window.webkitURL,
+                imgURL = URL.createObjectURL(blob);
+
+            this.imagesDB[result.value.talkId] = imgURL;
+            URL.revokeObjectURL(blob);
+
+            result.continue();
+
+        });
 
         // ログアウト時のリダイレクト
         window.auth.onAuthStateChanged( (user) => {
@@ -35,14 +54,15 @@ class App extends React.Component {
 
         this.GetMessageData();
         this.Readed();
+
     }
 
     componentDidUpdate() {
         this.Readed();
     }
 
-    Readed() {
 
+    Readed() {
         //相手のアカウントに対して "readed" をつける必要がある。
         if(this.state.meta && window.auth.currentUser) {
             let members = this.state.meta[this.roomId].members;
@@ -54,13 +74,42 @@ class App extends React.Component {
                 }
             }
         }
-
     }
 
     SetScroll() {
         if(!this.refs.page_scroll) return true;
         this.refs.page_scroll.scrollTop = this.refs.page_scroll.scrollHeight;
     }
+
+
+    UploadBlob(data) {
+
+        // // 画像パスから blob を取得
+        let xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.onload = (e) => {
+
+            window.ChatIndexDB.Put(this.roomId,{
+                talkId: data.talkId,
+                timestamp: data.timestamp,
+                blob: xhr.response
+            });
+
+            let blob = xhr.response,
+                URL = window.URL || window.webkitURL,
+                imgURL = URL.createObjectURL(blob);
+            let messages = this.state.messages;
+                messages[data.talkId]["image"] = imgURL;
+            this.actions.Messages(messages);
+
+            URL.revokeObjectURL(blob);
+
+        };
+        xhr.open('GET', data.image);
+        xhr.send();
+
+    }
+
 
     GetMessageData() {
 
@@ -78,11 +127,23 @@ class App extends React.Component {
 
         let SetMessages = (data) => {
             Message[data.key] = data.val();
+
+            if( Message[data.key].image && Message[data.key].image != "pre_upload" ) {
+                if (this.imagesDB.hasOwnProperty(data.key)) {
+                    Message[data.key].image = this.imagesDB[data.key];
+                } else {
+                    this.UploadBlob({
+                        image: Message[data.key].image,
+                        talkId: data.key,
+                        timestamp: Message[data.key].timestamp
+                    })
+                }
+            }
+
             clearTimeout(timer);
             timer = setTimeout( () => {
                 this.actions.Messages(Message);
                 this.SetScroll();
-
                 // Metaに追加
                 SetMeta( Message[data.key].message, Message[data.key].timestamp );
             },1)
@@ -98,6 +159,8 @@ class App extends React.Component {
                 length = keys.length,
                 lastMessage = Message[keys[length - 1]];
 
+            //indexedDBの項目削除
+            window.ChatIndexDB.Delete(this.roomId,data.key);
             // Metaに追加
             SetMeta( lastMessage.message, lastMessage.timestamp );
         };
@@ -161,8 +224,6 @@ class App extends React.Component {
         this.actions = this.props.actions;
         this.history = this.props.history;
 
-        this.roomId = this.props.match.params.id;
-
         let roomName = this.GetRoomName();
         let myMeta = this.state.meta ? this.state.meta[this.roomId] : null
 
@@ -187,6 +248,7 @@ class App extends React.Component {
                                 ShowImageDetail={this.ShowImageDetail.bind(this)}
                                 actions={this.actions}
                                 state={this.state}
+                                roomId={this.roomId}
                                 metaRef={this.metaRef}
                                 messagesRef={this.messagesRef} />
 

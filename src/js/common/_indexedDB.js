@@ -3,31 +3,19 @@ class ChatIndexDB {
     constructor(storeName) {
 
         this.dataBaseName = "ChatDatabase";
-
         this.chatDB = null;
         this.db = null;
         this.dbVersion = 0;
-
         this.stores = [];
+
+        this.Init();
 
     }
 
-    Set(storeName) {
-
-        if(this.db) this.db.close();
-
-        if( this.stores.indexOf(storeName) == -1 ) {
-            this.dbVersion += 1;
-
-            this.chatDB = window.indexedDB.open(this.dataBaseName,this.dbVersion);
-
-            this.chatDB.onerror = this.Onerror.bind(this);
-            this.chatDB.onsuccess = this.Onsuccess.bind(this);
-            this.chatDB.onupgradeneeded = (e) => {
-                this.Onupgradeneeded(e,storeName);
-            }
-        }
-
+    Init() {
+        this.chatDB = window.indexedDB.open(this.dataBaseName);
+        this.chatDB.onerror = this.Onerror.bind(this);
+        this.chatDB.onsuccess = this.Onsuccess.bind(this);
     }
 
     Onerror(e) {
@@ -45,14 +33,37 @@ class ChatIndexDB {
         this.db.createObjectStore(storeName, {keyPath : 'talkId'})
     }
 
-    Put(storeName, talkId, file) {
+    Set(storeName,callback) {
 
-        let trans = this.db.transaction([storeName], 'readwrite');
-        let store = trans.objectStore(storeName);
-        let putReq = store.put({
-            'talkId': talkId,
-            'file': file
-        });
+        if( this.stores.indexOf(storeName) == -1 ) {
+
+            this.db.close();
+
+            this.dbVersion += 1;
+
+            this.chatDB = window.indexedDB.open(this.dataBaseName,this.dbVersion);
+
+            this.chatDB.onerror = this.Onerror.bind(this);
+            this.chatDB.onsuccess = (e) => {
+                this.Onsuccess(e);
+                callback();
+            }
+            this.chatDB.onupgradeneeded = (e) => {
+                this.Onupgradeneeded(e,storeName);
+            }
+        } else {
+            callback();
+        }
+
+    }
+
+    Put(storeName,putData) {
+
+        if( !putData ) return true;
+
+        let trans = this.db.transaction([storeName], 'readwrite'),
+            store = trans.objectStore(storeName),
+            putReq = store.put(putData);
 
         putReq.onsuccess = (e) => {
             let result = (e.target) ? e.target.result : e.result;
@@ -64,33 +75,41 @@ class ChatIndexDB {
 
     }
 
-    Get(storeName,talkId) {
+    Get(getData,callback) {
 
-        let trans = this.db.transaction([storeName], 'readonly');
-        let store = trans.objectStore(storeName);
-        let getReq = store.get(talkId);
+        if( !getData && !this.db ) return true;
 
-        getReq.onsuccess = (e) => {
-            let result = (e.target) ? e.target.result : e.result;
-            console.log(result);
-        }
+        let trans = this.db.transaction([getData.storeName], 'readonly'),
+            store = trans.objectStore(getData.storeName),
+            getReq = store.get(getData.talkId);
+
+        getReq.onsuccess = callback;
 
     }
 
-    GetAll(storeName) {
+    GetAll(storeName,callback) {
 
-        let trans = this.db.transaction([storeName], 'readonly');
-        let range = IDBKeyRange.lowerBound(0);
-        let store = trans.objectStore(storeName);
-        let cursorRequest = store.openCursor(range);
+        if( !this.db ) return true;
 
-        cursorRequest.onsuccess = (e) => {
-            let result = e.target.result;
-            if (!!result == false) return;
-            console.log(result.value);
-            result.continue();
-        }
+        let trans = this.db.transaction([storeName], 'readonly'),
+            range = IDBKeyRange.lowerBound(0),
+            store = trans.objectStore(storeName),
+            cursorRequest = store.openCursor(range);
 
+        cursorRequest.onsuccess = callback;
+    }
+
+    Delete(storeName,talkId) {
+
+        if( !this.db ) return true;
+
+        let trans = this.db.transaction([storeName], 'readwrite'),
+            store = trans.objectStore(storeName),
+            deleteRequest = store.delete(talkId);
+
+        deleteRequest.onsuccess = (e) => {
+            console.log("delete");
+        };
     }
 
 }

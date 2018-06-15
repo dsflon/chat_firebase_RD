@@ -50,7 +50,7 @@ class Input extends React.Component {
                     console.error('There was an error uploading a file to Firebase Storage:', error);
                 }, () => {
                     storageRef.getDownloadURL().then( (src) => {
-                        data.update({ image: src });
+                        data.update({ image: src, filePath: filePath });
                     });
                     console.log("post image!");
                 });

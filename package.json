@@ -8,6 +8,8 @@
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
     "firebase": "webpack --mode development && firebase serve",
+    "deploy": "npm run build && firebase deploy",
+    "deploy:dev": "npm run build:dev && firebase deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

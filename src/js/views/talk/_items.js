@@ -2,12 +2,17 @@ import React from 'react';
 
 import TimeStamp from '../../common/_timestamp';
 import nl2br from '../../common/_nl2br';
+import ImgToBlob from '../../common/_img_to_blob';
 
 class Input extends React.Component {
 
     constructor(props) {
         super(props);
+    }
 
+    componentDidMount() {
+    }
+    componentDidUpdate() {
     }
 
     Remove(thisTalk,e) {
@@ -36,9 +41,7 @@ class Input extends React.Component {
 
         let img = imageUri != "pre_upload" ? <img onClick={this.props.ShowImageDetail} src={imageUri} onLoad={this.setScroll} /> : null;
 
-        return (
-            <figure className="messages-img">{img}</figure>
-        );
+        return <figure className="messages-img">{img}</figure>;
 
     }
 
@@ -108,6 +111,7 @@ class Input extends React.Component {
         this.state = this.props.state;
         this.messagesRef = this.props.messagesRef;
         this.metaRef = this.props.metaRef;
+        this.roomId = this.props.roomId;
 
         let message = this.state.messages ? this.GetMessages() : null;
 
