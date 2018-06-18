@@ -2,7 +2,6 @@ import React from 'react';
 
 import TimeStamp from '../../common/_timestamp';
 import nl2br from '../../common/_nl2br';
-import ImgToBlob from '../../common/_img_to_blob';
 
 class Input extends React.Component {
 

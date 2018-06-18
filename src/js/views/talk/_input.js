@@ -1,4 +1,5 @@
 import React from 'react';
+import ImgTrim from '../../common/_img_trimming';
 
 class Input extends React.Component {
 
@@ -21,7 +22,7 @@ class Input extends React.Component {
 
     }
 
-    Post(obj,file) {
+    Post(obj,file,fileName) {
 
         let postData = {
             name: window.auth.currentUser.displayName,
@@ -42,7 +43,8 @@ class Input extends React.Component {
             //画像のとき
             if( postData.image && file ) {
 
-                let filePath = this.roomId + '/' + window.auth.currentUser.uid + '/' + Date.now() + '/' + file.name,
+                // let filePath = this.roomId + '/' + window.auth.currentUser.uid + '/' + Date.now() + '/' + file.name,
+                let filePath = this.roomId + '/' + window.auth.currentUser.uid + '/' + Date.now() + '/' + fileName,
                     storageRef = window.storage.ref(filePath),
                     uploadTask = storageRef.put(file, {'contentType': file.type});
 
@@ -91,7 +93,12 @@ class Input extends React.Component {
 
         e.preventDefault();
         let file = e.target.files[0];
-        if (file.type.match('image.*')) this.Post({ image: "pre_upload" },file);
+
+        if (!file.type.match('image.*')) return true;
+
+        ImgTrim(file,(blob) => {
+            this.Post({ image: "pre_upload" },blob,file.name);
+        });
 
     }
 
