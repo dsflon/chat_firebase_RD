@@ -41,7 +41,7 @@
             color: $black50;
         }
         .user {
-            button {
+            button.log {
                 display: block;
                 position: absolute;
                 top: 50%; right: 20px;
@@ -55,6 +55,25 @@
                 border-radius: 100%;
                 outline: none;
                 background-image: url(/images/profile_placeholder.png);
+            }
+            .logout_wrap {
+                display: none;
+                position: absolute;
+                top: 50px; right: 20px;
+                width: 150px;
+                padding: 5px;
+                border-radius: 4px;
+                background: #FFF;
+                box-shadow: 0 0 10px 0 rgba(#000,0.1);
+                li {
+                    display: block;
+                    button {
+                        padding: 7px 10px;
+                        display: block;
+                        background: none;
+                        font-weight: bold;
+                    }
+                }
             }
             .login {
                 background: none;

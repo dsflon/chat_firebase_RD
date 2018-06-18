@@ -17,7 +17,7 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.userBtn = <button className="logout"></button>;
+        this.userBtn = <button className="logout log"></button>;
     }
 
     componentDidMount() {
@@ -31,13 +31,36 @@ class App extends React.Component {
 
     }
 
+    OpenLogout(e) {
+
+        let target = document.getElementById('logout_wrap');
+        if( target.style.display == "block" ) {
+            target.style.display = "none";
+        } else {
+            target.style.display = "block";
+        }
+
+    }
+
     CheckLogin() {
+
+        const LogOutWrap = (user) => {
+            return (
+                <div>
+                    <button onClick={this.OpenLogout.bind(this)} className="logout log" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>
+                    <ul className="logout_wrap" id="logout_wrap">
+                        <li><button onClick={Log.Out}>ログアウト</button></li>
+                        <li><button onClick={Log.Remove}>アカウント削除</button></li>
+                    </ul>
+                </div>
+            );
+        }
 
         window.auth.onAuthStateChanged( (user) => {
 
             if (user) { // User is signed in!
 
-                this.userBtn = <button onClick={Log.Out} className="logout" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>;
+                this.userBtn = LogOutWrap(user);
                 this.actions.Login({
                     uid: user.uid,
                     name: user.displayName,
@@ -50,7 +73,7 @@ class App extends React.Component {
 
             } else { // User is signed out!
 
-                this.userBtn = <button onClick={Log.In} className="login">login</button>;
+                this.userBtn = <button onClick={Log.In} className="login log">login</button>;
                 this.actions.Login(null);
 
             }

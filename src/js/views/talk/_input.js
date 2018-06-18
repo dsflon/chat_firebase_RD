@@ -96,6 +96,7 @@ class Input extends React.Component {
 
         if (!file.type.match('image.*')) return true;
 
+        //画像トリミングしてからアップロード
         ImgTrim(file,(blob) => {
             this.Post({ image: "pre_upload" },blob,file.name);
         });

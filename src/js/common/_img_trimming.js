@@ -20,7 +20,7 @@ const toBlob = (base64,type,callback) => {
 const ImgTrim = (file, callback) => {
 
     let type = file.type;
-    let maxWidth = 640;
+    let maxWidth = 768;
 
     let fileReader = new FileReader();
     fileReader.onload = (e) => {

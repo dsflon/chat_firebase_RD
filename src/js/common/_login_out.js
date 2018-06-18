@@ -5,7 +5,7 @@ const Log = {
     In: () => {
 
         let provider = new firebase.auth.GoogleAuthProvider();
-        
+
         window.auth.signInWithPopup(provider).then( (result) => {
             console.log("ログインしました。");
         }).catch( (error) => {
@@ -21,6 +21,15 @@ const Log = {
             window.auth.signOut().then( () => {
                 console.log("ログアウトしました。");
             });
+        }
+
+    },
+
+    Remove: () => {
+
+        let res = confirm("アカウントを削除しますか？");
+        if( res == true ) {
+            console.log("アカウントを削除しました。");
         }
 
     }
