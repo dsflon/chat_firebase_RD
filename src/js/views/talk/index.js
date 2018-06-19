@@ -155,9 +155,13 @@ class App extends React.Component {
             this.actions.Messages(Message);
             this.SetScroll();
 
-            let keys = Object.keys(Message),
-                length = keys.length,
+            let keys = Object.keys(Message);
+
+            let length = keys.length,
                 lastMessage = Message[keys[length - 1]];
+                lastMessage = lastMessage ? lastMessage : {
+                    message: "メッセージがありません", timestamp : null
+                }
 
             //indexedDBの項目削除
             window.ChatIndexDB.Delete(this.roomId,data.key);

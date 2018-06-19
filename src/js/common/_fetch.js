@@ -35,10 +35,14 @@ function GetMetaData(actions) {
             actions.Meta(meta);
         },1)
     };
-    
+
     metaRef.off();
     metaRef.on('child_added', SetMeta);
     metaRef.on('child_changed', SetMeta);
+    metaRef.on('child_removed', (data) => {
+        delete meta[data.key];
+        actions.Meta(meta);
+    });
 
 }
 

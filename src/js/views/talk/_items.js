@@ -22,7 +22,7 @@ class Input extends React.Component {
         if( res == true ) {
 
             this.messagesRef.child(talkId).remove();
-
+console.log(thisTalk.filePath);
             if(thisTalk.filePath) {
                 let desertRef = window.storage.ref(thisTalk.filePath);
                 desertRef.delete().then( () => {
@@ -87,7 +87,7 @@ class Input extends React.Component {
                                 {remove}
                                 {message}
                                 {image}
-                                <span className="messages-time">{TimeStamp(thisTalk.timestamp)}</span>
+                                <span className="messages-time">{thisTalk.timestamp ? TimeStamp(thisTalk.timestamp) : null}</span>
                             </div>
                         </div>
 

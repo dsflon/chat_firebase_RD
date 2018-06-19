@@ -112,6 +112,21 @@ class ChatIndexDB {
         };
     }
 
+    RemoveStore(storeName) {
+
+        if( this.stores.indexOf(storeName) >= 0 ) {
+            // console.log(this.stores,storeName);
+            this.db.close();
+            this.dbVersion += 1;
+            this.chatDB = window.indexedDB.open(this.dataBaseName,this.dbVersion);
+            this.chatDB.onupgradeneeded = (e) => {
+                let db = e.target.result;
+                db.deleteObjectStore(storeName)
+            }
+        }
+
+    }
+
 }
 
 export default ChatIndexDB;

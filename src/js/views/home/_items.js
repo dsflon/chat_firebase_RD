@@ -51,7 +51,7 @@ class Items extends React.Component {
                                     <div className="roomlist-wrap">
                                         <p className="roomlist-name">{member.name}</p>
                                         <p className="roomlist-mess">{roomData.lastMessage}</p>
-                                        <p className="roomlist-time">{TimeStamp(roomData.timestamp)}</p>
+                                        <p className="roomlist-time">{roomData.timestamp ? TimeStamp(roomData.timestamp) : null}</p>
                                     </div>
                                 </button>
                             </li>

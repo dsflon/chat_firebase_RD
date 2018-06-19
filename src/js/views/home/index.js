@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as ActionCreators from '../../actions';
 
 import Items from './_items';
+import Header from './_header';
 
 import Log from '../../common/_login_out';
 import Fetch from '../../common/_fetch';
@@ -17,63 +18,64 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.userBtn = <button className="logout log"></button>;
+
+        this.usersRef = null,
+        this.myRooms = [];
     }
 
     componentDidMount() {
         this.CheckLogin();
-
     }
 
     componentDidUpdate() {
 
         if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
 
-    }
-
-    OpenLogout(e) {
-
-        let target = document.getElementById('logout_wrap');
-        if( target.style.display == "block" ) {
-            target.style.display = "none";
-        } else {
-            target.style.display = "block";
+        if( this.state.myAccount ) {
+            this.name = this.state.myAccount.name;
+            this.uid = this.state.myAccount.uid;
+            this.thumb = this.state.myAccount.thumb;
         }
 
     }
 
     CheckLogin() {
 
-        const LogOutWrap = (user) => {
-            return (
-                <div>
-                    <button onClick={this.OpenLogout.bind(this)} className="logout log" style={ user.photoURL ? { "backgroundImage": "url("+ user.photoURL +")" } : null }></button>
-                    <ul className="logout_wrap" id="logout_wrap">
-                        <li><button onClick={Log.Out}>ログアウト</button></li>
-                        <li><button onClick={Log.Remove}>アカウント削除</button></li>
-                    </ul>
-                </div>
-            );
-        }
-
         window.auth.onAuthStateChanged( (user) => {
 
             if (user) { // User is signed in!
 
-                this.userBtn = LogOutWrap(user);
                 this.actions.Login({
                     uid: user.uid,
                     name: user.displayName,
                     thumb: user.photoURL
                 });
 
-                this.name = user.displayName;
-                this.uid = user.uid;
-                this.thumb = user.photoURL;
+                this.usersRef = window.database.ref('users');
+                this.usersRef.child(this.uid).on("value", (snapshot) => {
+                    let data = snapshot.val();
+                    if(data && data.rooms) {
+                        this.myRooms = data.rooms;
+                        this.actions.Login({
+                            uid: user.uid,
+                            name: user.displayName,
+                            thumb: user.photoURL,
+                            rooms: data.rooms
+                        });
+                    }
+                });
+                // this.usersRef.off();
+                this.usersRef.on('child_removed', (e) => {
+                    let rooms = this.state.myAccount.rooms;
+                    if( rooms ) {
+                        for (var i = 0; i < rooms.length; i++) {
+                            window.ChatIndexDB.RemoveStore(rooms[i]);
+                        }
+                    }
+                });
 
             } else { // User is signed out!
 
-                this.userBtn = <button onClick={Log.In} className="login log">login</button>;
                 this.actions.Login(null);
 
             }
@@ -100,10 +102,10 @@ class App extends React.Component {
 
         e.preventDefault();
 
-        let id = e.currentTarget.id;
+        let roomId = e.currentTarget.id;
 
         ////トーク一覧用のMetaを新しく生成
-        let metaRef = window.database.ref( 'meta/' + id );
+        let metaRef = window.database.ref( 'meta/' + roomId );
         let metaData = {
             "lastMessage": "こんにちは、はじめまして。",
             "timestamp": new Date().getTime(),
@@ -120,16 +122,15 @@ class App extends React.Component {
             "thumb": this.thumb,
             "readed": false
         }
-
         metaRef.set(metaData).then( () => {
-            console.log("new Talk Room");
+            console.log("new Talk Room : meta");
         }).catch( (error) => {
             console.error('Error writing new message to Firebase Database', error);
         });
 
 
         ////トークの初期データを生成
-        let messagesRef = window.database.ref( 'messages/' + id );
+        let messagesRef = window.database.ref( 'messages/' + roomId );
         messagesRef.push({
             "name": "斎藤大輝",
             "uid": "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
@@ -137,12 +138,21 @@ class App extends React.Component {
             "message": "こんにちは、はじめまして。",
             "timestamp": new Date().getTime()
         }).then( () => {
-            console.log("new Talk Room");
+            console.log("new Talk Room : messages");
         }).catch( (error) => {
             console.error('Error writing new message to Firebase Database', error);
         });
 
-        this.history.push("/talk/"+id);
+
+        //データベースuserにroomsに追加
+        let updates = {}
+        updates['/rooms'] = this.myRooms;
+        this.myRooms.push(roomId);
+        this.usersRef.child(this.uid).update(updates);
+
+        window.ChatIndexDB.Set(roomId,() => {
+            this.history.push("/talk/"+roomId);
+        });
 
     }
 
@@ -152,15 +162,15 @@ class App extends React.Component {
         this.actions = this.props.actions;
         this.history = this.props.history;
 
+        // console.log(this.state);
+
         return (
             <div className="page" ref="page">
 
-                <header>
-                    <h1>Talk</h1>
-                    <div className="user">
-                        {this.userBtn}
-                    </div>
-                </header>
+                <Header
+                    login={this.login}
+                    state={this.state}
+                    actions={this.actions} />
 
                 <div className="page-scroll" ref="page_scroll">
 
