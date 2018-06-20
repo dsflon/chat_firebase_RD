@@ -21,12 +21,14 @@ class Input extends React.Component {
         let res = confirm("削除しますか？");
         if( res == true ) {
 
+            //DBから削除
             this.messagesRef.child(talkId).remove();
-console.log(thisTalk.filePath);
+
+            //storageから削除
             if(thisTalk.filePath) {
                 let desertRef = window.storage.ref(thisTalk.filePath);
                 desertRef.delete().then( () => {
-                    console.log("画像を削除しました。");
+                    console.log("storage 画像を削除しました。");
                 }).catch( (error) => {
                     console.error(error);
                 });

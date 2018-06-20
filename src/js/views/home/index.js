@@ -64,12 +64,11 @@ class App extends React.Component {
                         });
                     }
                 });
-                // this.usersRef.off();
                 this.usersRef.on('child_removed', (e) => {
                     let rooms = this.state.myAccount.rooms;
                     if( rooms ) {
-                        for (var i = 0; i < rooms.length; i++) {
-                            window.ChatIndexDB.RemoveStore(rooms[i]);
+                        for (var roomId in rooms) {
+                            window.ChatIndexDB.RemoveStore(roomId);
                         }
                     }
                 });
@@ -103,20 +102,24 @@ class App extends React.Component {
         e.preventDefault();
 
         let roomId = e.currentTarget.id;
+        let partnerData = {
+            "uid": "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
+            "name": "斎藤大輝",
+            "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
+        }
 
         ////トーク一覧用のMetaを新しく生成
         let metaRef = window.database.ref( 'meta/' + roomId );
         let metaData = {
             "lastMessage": "こんにちは、はじめまして。",
             "timestamp": new Date().getTime(),
-            "members": {
-                "qIGf0AzOcIgsTOF1uhYOjEMACZm1": {
-                    "name": "斎藤大輝",
-                    "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
-                    "readed": false
-                }
-            }
+            "members": {}
         };
+        metaData["members"][partnerData.uid] = {
+            "name": partnerData.name,
+            "thumb": partnerData.thumb,
+            "readed": false
+        }
         metaData["members"][this.uid] = {
             "name": this.name,
             "thumb": this.thumb,
@@ -124,32 +127,40 @@ class App extends React.Component {
         }
         metaRef.set(metaData).then( () => {
             console.log("new Talk Room : meta");
-        }).catch( (error) => {
-            console.error('Error writing new message to Firebase Database', error);
         });
 
 
         ////トークの初期データを生成
         let messagesRef = window.database.ref( 'messages/' + roomId );
         messagesRef.push({
-            "name": "斎藤大輝",
-            "uid": "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
-            "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
+            "name": partnerData.name,
+            "uid": partnerData.uid,
+            "thumb": partnerData.thumb,
             "message": "こんにちは、はじめまして。",
             "timestamp": new Date().getTime()
         }).then( () => {
             console.log("new Talk Room : messages");
-        }).catch( (error) => {
-            console.error('Error writing new message to Firebase Database', error);
         });
 
 
-        //データベースuserにroomsに追加
-        let updates = {}
-        updates['/rooms'] = this.myRooms;
-        this.myRooms.push(roomId);
-        this.usersRef.child(this.uid).update(updates);
+        //データベースuserにroomsに追加（自分の分）r
+        this.usersRef.child(this.uid).once('value').then( (snapshot) => {
+            let data = snapshot.val();
+            let updates = {};
+            updates['/rooms/' + roomId] = true;
+            this.usersRef.child(this.uid).update(updates);
+        });
 
+        //データベースuserにroomsに追加（相手の分）
+        this.usersRef.child(partnerData.uid).once('value').then( (snapshot) => {
+            let data = snapshot.val();
+            let updates = {};
+            updates['/rooms/' + roomId] = true;
+            this.usersRef.child(partnerData.uid).update(updates);
+        });
+
+
+        //ページ遷移
         window.ChatIndexDB.Set(roomId,() => {
             this.history.push("/talk/"+roomId);
         });
@@ -161,8 +172,6 @@ class App extends React.Component {
         this.state = this.props.state;
         this.actions = this.props.actions;
         this.history = this.props.history;
-
-        // console.log(this.state);
 
         return (
             <div className="page" ref="page">

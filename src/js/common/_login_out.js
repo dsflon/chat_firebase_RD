@@ -57,24 +57,54 @@ const Log = {
             let usersRef = window.database.ref('users');
             let myData = window.auth.currentUser;
 
-            usersRef.child(myData.uid).on("value", (snapshot) => {
+            // 全ユーザーから該当するroomsを削除
+            usersRef.once('value').then( (snapshot) => {
+                let data = snapshot.val();
+                let myRooms = data[myData.uid].rooms;
+                for (var uid in data) {
+                    if( uid !== myData.uid ) {
+                        // console.log(uid, myData.uid);
+                        let rooms = data[uid].rooms;
+                        for (var roomId in myRooms) {
+                            if (rooms.hasOwnProperty(roomId)) {
+                                delete rooms[roomId];
+                                let updates = {};
+                                updates['/rooms'] = rooms;
+                                usersRef.child(uid).update(updates);
+                            }
+                        }
+                    }
+                }
+            });
+            // databaseのusesからroomsを抽出
+            usersRef.child(myData.uid).once('value').then( (snapshot) => {
 
                 let data = snapshot.val();
 
                 if(data && data.rooms) {
-                    for (var i = 0; i < data.rooms.length; i++) {
-                        window.database.ref('messages').child(data.rooms[i]).remove();
-                        window.database.ref('meta').child(data.rooms[i]).remove();
+                    for (var roomId in data.rooms) {
 
-                        // let desertRef = window.storage.ref(data.rooms[i]+"/");
-                        // console.log(data.rooms[i]);
-                        // console.log(desertRef);
-                        // desertRef.delete();
+                        let messages = window.database.ref('messages').child(roomId),
+                            meta = window.database.ref('meta').child(roomId);
+
+                        messages.on("value", (snapshot) => {
+                            let data = snapshot.val();
+                            for (var talkId in data) { // ストレージから画像を削除
+                                if( data[talkId].filePath ) {
+                                    let desertRef = window.storage.ref(data[talkId].filePath);
+                                    desertRef.delete();
+                                }
+                            }
+                            messages.remove();
+                        });
+
+                        meta.remove();
+
                     }
+
                 }
 
                 window.database.ref('users').child(myData.uid).remove();
-                // console.log("アカウントを削除しました。");
 
                 setTimeout( () => {
                     window.auth.signOut();

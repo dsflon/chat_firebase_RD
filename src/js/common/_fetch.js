@@ -23,7 +23,6 @@ const Fetch = (actions,roomId) => {
 
 function GetMetaData(actions) {
 
-    // let metaRef = window.metaRef = window.database.ref('meta');
     let metaRef = window.metaRef = window.database.ref('meta').orderByChild('timestamp'); //orderByChildは昇順になる
 
     let meta = {}, timer;

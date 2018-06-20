@@ -70,7 +70,7 @@ class ChatIndexDB {
             console.log('put data success');
         }
         trans.oncomplete = () => {
-            console.log('transaction complete');
+            // console.log('transaction complete');
         }
 
     }
@@ -89,7 +89,7 @@ class ChatIndexDB {
 
     GetAll(storeName,callback) {
 
-        if( !this.db ) return true;
+        if( !this.db || this.stores.indexOf(storeName) == -1 ) return true;
 
         let trans = this.db.transaction([storeName], 'readonly'),
             range = IDBKeyRange.lowerBound(0),
@@ -108,7 +108,7 @@ class ChatIndexDB {
             deleteRequest = store.delete(talkId);
 
         deleteRequest.onsuccess = (e) => {
-            console.log("delete");
+            console.log("indexedDB 画像を削除しました。");
         };
     }
 

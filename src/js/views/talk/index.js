@@ -52,8 +52,10 @@ class App extends React.Component {
             }
         });
 
-        this.GetMessageData();
-        this.Readed();
+        // setTimeout( () => {
+            this.GetMessageData();
+            // this.Readed();
+        // }, 1);
 
     }
 
@@ -64,7 +66,7 @@ class App extends React.Component {
 
     Readed() {
         //相手のアカウントに対して "readed" をつける必要がある。
-        if(this.state.meta && window.auth.currentUser) {
+        if(this.state.meta && this.state.messages && window.auth.currentUser) {
             let members = this.state.meta[this.roomId].members;
             for (var uid in members) {
                 if( uid !== window.auth.currentUser.uid ) {
@@ -155,18 +157,23 @@ class App extends React.Component {
             this.actions.Messages(Message);
             this.SetScroll();
 
-            let keys = Object.keys(Message);
+            // let keys = Object.keys(Message),
+            //     length = keys.length,
+            //     lastMessage = Message[keys[length - 1]];
+            //     lastMessage = lastMessage ? lastMessage : {
+            //         message: "メッセージがありません", timestamp : null
+            //     }
 
-            let length = keys.length,
-                lastMessage = Message[keys[length - 1]];
-                lastMessage = lastMessage ? lastMessage : {
-                    message: "メッセージがありません", timestamp : null
-                }
-
-            //indexedDBの項目削除
+            //indexedDBの項目削除 相手先のindexedDBからも削除するのでここに記述する
             window.ChatIndexDB.Delete(this.roomId,data.key);
-            // Metaに追加
-            SetMeta( lastMessage.message, lastMessage.timestamp );
+
+            // this.metaRef.on( "value", (snapshot) => {
+            //     let data = snapshot.val();
+            //     console.log(data);
+            //     // Metaに追加
+            //     // if(data) SetMeta(lastMessage.message,lastMessage.timestamp);
+            // })
+
         };
 
         this.messagesRef.off();
@@ -177,17 +184,13 @@ class App extends React.Component {
     }
 
     GetMyRoomData(meta) {
-
         let roomMember = meta.members;
-
         for (var userId in roomMember) {
             if( this.state.myAccount.uid !== userId ) {
                 roomMember = roomMember[userId]
             }
         }
-
         return roomMember;
-
     }
 
     GetRoomName() {
