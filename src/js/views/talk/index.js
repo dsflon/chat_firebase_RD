@@ -15,47 +15,36 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.imagesDB = {};
     }
 
     componentWillMount() {
         this.roomId = this.props.match.params.id;
+        this.messagesRef = window.database.ref( 'messages/' + this.roomId );
+        this.metaRef = window.database.ref( 'meta/' + this.roomId );
     }
     componentDidMount() {
 
-        // リロードしたときの処理
-        if( !this.state.meta ) Fetch(this.actions);
+        if( !this.state.meta ) this.history.push("/");
 
         window.ChatIndexDB.GetAll(this.roomId,(e) => {
 
-            let result = e.target.result;
+            let result = e.target.result,
+                imagesDB = {};
+
             if (!!result == false) return;
 
-            let blob = result.value.blob,
-                URL = window.URL || window.webkitURL,
-                imgURL = URL.createObjectURL(blob);
+            for (var i = 0; i < result.length; i++) {
+                let blob = result[i].blob,
+                    URL = window.URL || window.webkitURL,
+                    imgURL = URL.createObjectURL(blob);
 
-            this.imagesDB[result.value.talkId] = imgURL;
-            URL.revokeObjectURL(blob);
-
-            result.continue();
-
-        });
-
-        // ログアウト時のリダイレクト
-        window.auth.onAuthStateChanged( (user) => {
-            if(user) {
-                this.actions.Login({ uid: user.uid, thumb: user.photoURL });
-            } else {
-                this.history.push("/");
+                imagesDB[result[i].talkId] = imgURL;
+                URL.revokeObjectURL(blob);
             }
-        });
 
-        // setTimeout( () => {
-            this.GetMessageData();
-            // this.Readed();
-        // }, 1);
+            this.GetMessageData(imagesDB);
+
+        });
 
     }
 
@@ -113,26 +102,16 @@ class App extends React.Component {
     }
 
 
-    GetMessageData() {
-
-        this.messagesRef = window.database.ref( 'messages/' + this.roomId );
-        this.metaRef = window.database.ref( 'meta/' + this.roomId );
+    GetMessageData(imagesDB) {
 
         let Message = {}, timer;
-
-        let SetMeta = ( text, timestamp) => {
-            let updates = {};
-                updates['/lastMessage'] = text ? text : "画像を送信しました";
-                updates['/timestamp'] = timestamp;
-            this.metaRef.update(updates);
-        }
 
         let SetMessages = (data) => {
             Message[data.key] = data.val();
 
             if( Message[data.key].image && Message[data.key].image != "pre_upload" ) {
-                if (this.imagesDB.hasOwnProperty(data.key)) {
-                    Message[data.key].image = this.imagesDB[data.key];
+                if (imagesDB.hasOwnProperty(data.key)) {
+                    Message[data.key].image = imagesDB[data.key];
                 } else {
                     this.UploadBlob({
                         image: Message[data.key].image,
@@ -146,8 +125,6 @@ class App extends React.Component {
             timer = setTimeout( () => {
                 this.actions.Messages(Message);
                 this.SetScroll();
-                // Metaに追加
-                SetMeta( Message[data.key].message, Message[data.key].timestamp );
             },1)
         };
 
@@ -157,29 +134,26 @@ class App extends React.Component {
             this.actions.Messages(Message);
             this.SetScroll();
 
-            // let keys = Object.keys(Message),
-            //     length = keys.length,
-            //     lastMessage = Message[keys[length - 1]];
-            //     lastMessage = lastMessage ? lastMessage : {
-            //         message: "メッセージがありません", timestamp : null
-            //     }
-
-            //indexedDBの項目削除 相手先のindexedDBからも削除するのでここに記述する
-            window.ChatIndexDB.Delete(this.roomId,data.key);
-
-            // this.metaRef.on( "value", (snapshot) => {
-            //     let data = snapshot.val();
-            //     console.log(data);
-            //     // Metaに追加
-            //     // if(data) SetMeta(lastMessage.message,lastMessage.timestamp);
-            // })
-
         };
 
         this.messagesRef.off();
         this.messagesRef.on('child_added', SetMessages);
         this.messagesRef.on('child_changed', SetMessages);
         this.messagesRef.on('child_removed', RemoveMessages);
+
+        // 使用していない画像をIndexDBから削除する
+        this.messagesRef.once("value").then( (snapshot) => {
+
+            let data = snapshot.val(),
+                talkIds = Object.keys(imagesDB);
+
+            for (var i = 0; i < talkIds.length; i++) {
+                if( !data[talkIds[i]] ) {
+                    window.ChatIndexDB.Delete(this.roomId,talkIds[i]);
+                }
+            }
+
+        })
 
     }
 
@@ -194,7 +168,7 @@ class App extends React.Component {
     }
 
     GetRoomName() {
-        if( this.state.messages && this.state.meta ) {
+        if( this.state.meta ) {
             let roomData = this.GetMyRoomData(this.state.meta[this.roomId]);
             this.roomName = roomData.name;
             return roomData.name;

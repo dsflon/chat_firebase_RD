@@ -18,24 +18,60 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.usersRef = null,
-        this.myRooms = [];
+        this.usersRef = null;
     }
 
     componentDidMount() {
-        this.CheckLogin();
+        if( !this.myAccount ) this.CheckLogin();
     }
 
     componentDidUpdate() {
-
-        if(this.state.myAccount && !this.state.meta) Fetch(this.actions);
-
-        if( this.state.myAccount ) {
-            this.name = this.state.myAccount.name;
-            this.uid = this.state.myAccount.uid;
-            this.thumb = this.state.myAccount.thumb;
+        if(this.myAccount && !this.meta) Fetch(this.actions);
+        if( this.meta ) {
+            this.UpdateMeta();
+            this.CheckIndexedDB();
         }
+    }
+
+    CheckIndexedDB() { // IndexedDBをチェックして利用していないものは削除する
+        let stores = window.ChatIndexDB.stores,
+            metaKey = Object.keys(this.meta);
+        for (var i = 0; i < stores.length; i++) {
+            if( metaKey.indexOf(stores[i]) === -1 ) {
+                window.ChatIndexDB.RemoveStore(stores[i]);
+            }
+        }
+    }
+
+    UpdateMeta() {
+
+        let messagesRef = window.database.ref('messages'),
+            metaRef = window.database.ref('meta');
+
+        let SetMeta = (roomId,data) => {
+            let updates = {};
+                updates['/lastMessage'] = data.message ? data.message : "画像を送信しました";
+                updates['/timestamp'] = data.timestamp;
+            metaRef.child(roomId).update(updates);
+        }
+
+        messagesRef.once('value').then( (snapshot) => {
+            let data = snapshot.val();
+            let meta = this.meta;
+
+            for (var roomId in meta) {
+
+                let keys = Object.keys(data[roomId]),
+                    length = keys.length,
+                    lastMessage = data[roomId][keys[length - 1]];
+
+                lastMessage = lastMessage ? lastMessage : {
+                    message: "メッセージがありません", timestamp : null
+                }
+                SetMeta(roomId,lastMessage);
+
+            }
+        })
 
     }
 
@@ -52,24 +88,15 @@ class App extends React.Component {
                 });
 
                 this.usersRef = window.database.ref('users');
-                this.usersRef.child(this.uid).on("value", (snapshot) => {
+                this.usersRef.child(user.uid).once('value').then( (snapshot) => {
                     let data = snapshot.val();
                     if(data && data.rooms) {
-                        this.myRooms = data.rooms;
                         this.actions.Login({
                             uid: user.uid,
                             name: user.displayName,
                             thumb: user.photoURL,
                             rooms: data.rooms
                         });
-                    }
-                });
-                this.usersRef.on('child_removed', (e) => {
-                    let rooms = this.state.myAccount.rooms;
-                    if( rooms ) {
-                        for (var roomId in rooms) {
-                            window.ChatIndexDB.RemoveStore(roomId);
-                        }
                     }
                 });
 
@@ -120,9 +147,9 @@ class App extends React.Component {
             "thumb": partnerData.thumb,
             "readed": false
         }
-        metaData["members"][this.uid] = {
-            "name": this.name,
-            "thumb": this.thumb,
+        metaData["members"][this.myAccount.uid] = {
+            "name": this.myAccount.name,
+            "thumb": this.myAccount.thumb,
             "readed": false
         }
         metaRef.set(metaData).then( () => {
@@ -144,11 +171,11 @@ class App extends React.Component {
 
 
         //データベースuserにroomsに追加（自分の分）r
-        this.usersRef.child(this.uid).once('value').then( (snapshot) => {
+        this.usersRef.child(this.myAccount.uid).once('value').then( (snapshot) => {
             let data = snapshot.val();
             let updates = {};
             updates['/rooms/' + roomId] = true;
-            this.usersRef.child(this.uid).update(updates);
+            this.usersRef.child(this.myAccount.uid).update(updates);
         });
 
         //データベースuserにroomsに追加（相手の分）
@@ -172,6 +199,9 @@ class App extends React.Component {
         this.state = this.props.state;
         this.actions = this.props.actions;
         this.history = this.props.history;
+
+        this.meta = this.state.meta;
+        this.myAccount = this.state.myAccount;
 
         return (
             <div className="page" ref="page">

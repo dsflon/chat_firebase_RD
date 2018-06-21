@@ -92,11 +92,10 @@ class ChatIndexDB {
         if( !this.db || this.stores.indexOf(storeName) == -1 ) return true;
 
         let trans = this.db.transaction([storeName], 'readonly'),
-            range = IDBKeyRange.lowerBound(0),
             store = trans.objectStore(storeName),
-            cursorRequest = store.openCursor(range);
+            getReq = store.getAll();
 
-        cursorRequest.onsuccess = callback;
+        getReq.onsuccess = callback;
     }
 
     Delete(storeName,talkId) {
@@ -115,7 +114,11 @@ class ChatIndexDB {
     RemoveStore(storeName) {
 
         if( this.stores.indexOf(storeName) >= 0 ) {
-            // console.log(this.stores,storeName);
+
+            this.stores.some( (v, i) => { //this.stores から該当store削除
+                if( v === storeName ) this.stores.splice(i,1);
+            });
+
             this.db.close();
             this.dbVersion += 1;
             this.chatDB = window.indexedDB.open(this.dataBaseName,this.dbVersion);
