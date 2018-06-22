@@ -5,8 +5,6 @@ const Log = {
     In: () => {
 
         let provider = new firebase.auth.GoogleAuthProvider();
-
-        let usersRef = window.database.ref('users');
         let users = {}, myData, timer;
 
         let SetUsers = (data) => {
@@ -14,7 +12,7 @@ const Log = {
             clearTimeout(timer);
             timer = setTimeout( () => {
                 if ( !users.hasOwnProperty(myData.uid) ) {
-                    usersRef.child(myData.uid).set({
+                    window.usersRef.child(myData.uid).set({
                         name: myData.displayName,
                         thumb: myData.photoURL,
                         rooms: []
@@ -27,8 +25,8 @@ const Log = {
 
             myData = result.user;
 
-            usersRef.off();
-            usersRef.on('child_added', SetUsers);
+            window.usersRef.off();
+            window.usersRef.on('child_added', SetUsers);
 
             console.log("ログインしました。");
 
@@ -54,11 +52,11 @@ const Log = {
 
         if( res == true ) {
 
-            let usersRef = window.database.ref('users');
-            let myData = window.auth.currentUser;
+            let myData = window.auth.currentUser,
+                usersRef = window.usersRef.child(myData.uid);
 
             // 全ユーザーから該当するroomsを削除
-            usersRef.once('value').then( (snapshot) => {
+            window.usersRef.once('value').then( (snapshot) => {
                 let data = snapshot.val();
                 let myRooms = data[myData.uid].rooms;
                 for (var uid in data) {
@@ -70,14 +68,14 @@ const Log = {
                                 delete rooms[roomId];
                                 let updates = {};
                                 updates['/rooms'] = rooms;
-                                usersRef.child(uid).update(updates);
+                                window.usersRef.child(uid).update(updates);
                             }
                         }
                     }
                 }
             });
             // databaseのusesからroomsを抽出
-            usersRef.child(myData.uid).once('value').then( (snapshot) => {
+            usersRef.once('value').then( (snapshot) => {
 
                 let data = snapshot.val();
 
@@ -104,12 +102,13 @@ const Log = {
 
                 }
 
-                window.database.ref('users').child(myData.uid).remove();
-
-                setTimeout( () => {
-                    window.auth.signOut();
+                usersRef.remove();
+                
+                myData.delete().then(function() { //Authentication から削除
                     location.reload(); //都合悪いからリロード
-                },500 )
+                }).catch(function(error) {
+                    console.error(error);
+                }); // Authentication から削除
 
             });
 
