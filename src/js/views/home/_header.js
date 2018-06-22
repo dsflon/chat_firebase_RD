@@ -6,16 +6,17 @@ class Header extends React.Component {
 
     constructor(props) {
         super(props);
-        // this.userBtn = <button className="logout log"></button>;
-        // this.userBtn = null;
     }
 
-    componentDidMount() {
-        // this.CheckLoginBtn();
-    }
+    componentDidMount() {}
+    componentDidUpdate() {}
 
-    componentDidUpdate() {
-        // this.CheckLoginBtn();
+    ShowSearchDetail(e) {
+        let showDetail = this.state.showDetail || {};
+        showDetail["search"] = {
+            show: true
+        }
+        this.actions.ShowDetail(showDetail);
     }
 
     OpenLogout(e) {
@@ -53,32 +54,20 @@ class Header extends React.Component {
         );
     }
 
-    // CheckLoginBtn() {
-    //
-    //     window.auth.onAuthStateChanged( (user) => {
-    //         if (user) { // User is signed in!
-    //             this.userBtn = this.LogOutWrap(user);
-    //         } else { // User is signed out!
-    //             this.userBtn = <button onClick={Log.In} className="login log">login</button>;
-    //         }
-    //     })
-    //
-    // }
-
     render() {
 
         this.state = this.props.state;
         this.actions = this.props.actions;
 
         let myAccount = this.state.myAccount,
-            userBtn = myAccount ? this.LogOutWrap(myAccount) : <button onClick={Log.In} className="login log">login</button>;
+            userBtn = myAccount ? this.LogOutWrap(myAccount) : <button onClick={Log.In} className="login log">login</button>,
+            searchBtn = myAccount ? <button onClick={this.ShowSearchDetail.bind(this)} className="search">Search</button> : null;
 
         return (
             <header>
                 <h1>Talk</h1>
-                <div className="user">
-                    {userBtn}
-                </div>
+                {searchBtn}
+                <div className="user">{userBtn}</div>
             </header>
         );
 

@@ -178,7 +178,7 @@
     }//#from
 
 
-    .user-detail, .image-detail {
+    .search-detail, .user-detail, .image-detail {
         pointer-events: none;
         &.show {
             pointer-events: inherit;
@@ -270,6 +270,22 @@
                 line-height: 1;
                 padding: 30px 20px;
             }
+        }
+    }
+    .search-detail {
+        &.show .search-wrap { opacity: 1; }
+        .search-wrap {
+            position: fixed;
+            width: 96%; height: 80%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            max-width: 320px;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 1000;
+            opacity: 0;
+            background: $black10;
+            transition: all 0.1s ease;
         }
     }
 

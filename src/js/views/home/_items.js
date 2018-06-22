@@ -11,11 +11,17 @@ class Items extends React.Component {
         super(props);
     }
 
-    GetNewTalk(roomId,member) {
+    GetNewTalk(roomId) {
+
+        let member = {
+            uid: "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
+            name: "斎藤大輝",
+            thumb: "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
+        }
 
         return (
             <li key={roomId} className="roomlist-item">
-                <button id={roomId} className="roomlist-btn" onClick={this.CreateNewTalk.bind(this)}>
+                <button id={roomId} className="roomlist-btn" onClick={this.CreateNewTalk.bind(this,member)}>
                     <figure className="roomlist-thumb" style={ member.thumb ? { "backgroundImage": "url("+ member.thumb +")" } : null }></figure>
                     <div className="roomlist-wrap">
                         <p className="roomlist-name">{member.name + "と会話を始める"}</p>
@@ -94,11 +100,7 @@ class Items extends React.Component {
             if( !myRoomList[0] && this.state.myAccount.uid !== "qIGf0AzOcIgsTOF1uhYOjEMACZm1" ) {
 
                 myRoomList = this.GetNewTalk(
-                    "room_" + GetUniqueStr(),
-                    {
-                        "name": "斎藤大輝",
-                        "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg"
-                    }
+                    "room_" + GetUniqueStr()
                 )
 
             }

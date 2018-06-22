@@ -6,6 +6,7 @@ import * as ActionCreators from '../../actions';
 
 import Items from './_items';
 import Header from './_header';
+import SearchDetail from './_search_detail';
 
 import Log from '../../common/_login_out';
 import Fetch from '../../common/_fetch';
@@ -80,17 +81,20 @@ class App extends React.Component {
                 this.actions.Login({
                     uid: user.uid,
                     name: user.displayName,
-                    thumb: user.photoURL
+                    thumb: user.photoURL,
+                    rooms: {},
+                    friends: {}
                 });
 
                 window.usersRef.child(user.uid).once('value').then( (snapshot) => {
                     let data = snapshot.val();
-                    if(data && data.rooms) {
+                    if(data && data.rooms && data.friends) {
                         this.actions.Login({
                             uid: user.uid,
                             name: user.displayName,
                             thumb: user.photoURL,
-                            rooms: data.rooms
+                            rooms: data.rooms,
+                            friends: data.friends
                         });
                     }
                 });
@@ -119,23 +123,18 @@ class App extends React.Component {
 
     }
 
-    CreateNewTalk(e) {
+    CreateNewTalk(partnerData,e) {
 
         e.preventDefault();
 
         let roomId = e.currentTarget.id;
-        let partnerData = {
-            uid: "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
-            name: "斎藤大輝",
-            thumb: "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
-        },
-        def = {
+        let def = {
             message: "こんにちは、" + partnerData.name + "です。",
             timestamp: new Date().getTime()
         }
 
         ////トーク一覧用のMetaを新しく生成
-        let metaRef = window.database.ref( 'meta/' + roomId );
+        let metaRef = window.metaRef.child(roomId);
         let metaData = {
             lastMessage: def.message,
             timestamp: def.timestamp,
@@ -159,8 +158,8 @@ class App extends React.Component {
         ////トークの初期データを生成
         let messagesRef = window.messagesRef.child(roomId);
         messagesRef.push({
-            name: partnerData.name,
             uid: partnerData.uid,
+            name: partnerData.name,
             thumb: partnerData.thumb,
             message: def.message,
             timestamp: def.timestamp
@@ -169,12 +168,25 @@ class App extends React.Component {
         });
 
 
-        //データベースuserにroomsに追加（自分の分）r
+        //データベースuserにroomsに追加（自分の分）
         window.usersRef.child(this.myAccount.uid).once('value').then( (snapshot) => {
             let data = snapshot.val();
             let updates = {};
             updates['/rooms/' + roomId] = true;
+            updates['/friends/' + partnerData.uid] = {
+                name: partnerData.name,
+                thumb: partnerData.thumb,
+            };
             window.usersRef.child(this.myAccount.uid).update(updates);
+
+            let updateFriends = this.myAccount;
+            updateFriends['rooms'][roomId] = true;
+            updateFriends["friends"][partnerData.uid] = {
+                name: partnerData.name,
+                thumb: partnerData.thumb,
+            };
+            this.actions.Login(updateFriends);
+
         });
 
         //データベースuserにroomsに追加（相手の分）
@@ -182,9 +194,12 @@ class App extends React.Component {
             let data = snapshot.val();
             let updates = {};
             updates['/rooms/' + roomId] = true;
+            updates['/friends/' + this.myAccount.uid] = {
+                name: this.myAccount.name,
+                thumb: this.myAccount.thumb,
+            };
             window.usersRef.child(partnerData.uid).update(updates);
         });
-
 
         //ページ遷移
         window.ChatIndexDB.Set(roomId,() => {
@@ -227,6 +242,12 @@ class App extends React.Component {
                     </section>
 
                 </div>
+
+                <SearchDetail
+                    CreateNewTalk={this.CreateNewTalk.bind(this)}
+                    actions={this.actions}
+                    state={this.state} />
+
             </div>
         );
 

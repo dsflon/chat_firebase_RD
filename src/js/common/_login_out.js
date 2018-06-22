@@ -42,6 +42,7 @@ const Log = {
         if( res == true ) {
             window.auth.signOut().then( () => {
                 console.log("ログアウトしました。");
+                location.reload(); //都合悪いからリロード
             });
         }
 
@@ -52,34 +53,52 @@ const Log = {
 
         if( res == true ) {
 
-            let myData = window.auth.currentUser,
-                usersRef = window.usersRef.child(myData.uid);
+            let myData = window.auth.currentUser;
 
-            // 全ユーザーから該当するroomsを削除
             window.usersRef.once('value').then( (snapshot) => {
+
                 let data = snapshot.val();
-                let myRooms = data[myData.uid].rooms;
+
+                if( !data[myData.uid] ) return true;
+
+                let myRooms = data[myData.uid].rooms,
+                    myFriends = data[myData.uid].friends;
+
                 for (var uid in data) {
                     if( uid !== myData.uid ) {
-                        // console.log(uid, myData.uid);
-                        let rooms = data[uid].rooms;
+                        let rooms = data[uid].rooms,
+                            friends = data[uid].friends;// 他の人の友達
+
+                        // 全ユーザーから該当するroomsを削除
                         for (var roomId in myRooms) {
-                            if (rooms.hasOwnProperty(roomId)) {
+                            if (rooms && rooms.hasOwnProperty(roomId)) {
                                 delete rooms[roomId];
                                 let updates = {};
                                 updates['/rooms'] = rooms;
                                 window.usersRef.child(uid).update(updates);
                             }
                         }
+                        // 全ユーザーから自分を削除
+                        for (var friendId in myFriends) {
+                            if (friends && friends.hasOwnProperty(myData.uid)) {
+                                delete friends[myData.uid];
+                                let updates = {};
+                                updates['/friends'] = friends;
+                                window.usersRef.child(uid).update(updates);
+                            }
+                        }
                     }
                 }
             });
-            // databaseのusesからroomsを抽出
+
+            // databaseのusersからroomsを抽出
+            let usersRef = window.usersRef.child(myData.uid);
             usersRef.once('value').then( (snapshot) => {
 
                 let data = snapshot.val();
 
                 if(data && data.rooms) {
+
                     for (var roomId in data.rooms) {
 
                         let messages = window.database.ref('messages').child(roomId),
@@ -99,16 +118,19 @@ const Log = {
                         meta.remove();
 
                     }
-
                 }
 
                 usersRef.remove();
-                
-                myData.delete().then(function() { //Authentication から削除
+
+                myData.delete().then( () => { //Authentication から削除
                     location.reload(); //都合悪いからリロード
-                }).catch(function(error) {
+                }).catch( (error) => {
                     console.error(error);
-                }); // Authentication から削除
+                    window.auth.signOut().then( () => {
+                        console.log("ログアウトしました。");
+                        location.reload(); //都合悪いからリロード
+                    });
+                });
 
             });
 

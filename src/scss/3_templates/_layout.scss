@@ -40,6 +40,20 @@
             font-weight: bold;
             color: $black50;
         }
+        .search {
+            display: block;
+            position: absolute;
+            top: 50%; left: 20px;
+            transform: translate(0,-50%);
+            background: none;
+            border-radius: 100px;
+            border: 2px solid $black40;
+            color: $black40;
+            padding: 10px;
+            font-weight: bold;
+            line-height: 1;
+            letter-spacing: 0.01em;
+        }
         .user {
             button.log {
                 display: block;
