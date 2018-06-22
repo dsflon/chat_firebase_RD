@@ -17,6 +17,11 @@ const reducer = (state, action) => {
             messages: action.value,
         })
 
+        case 'SHOW_DETAIL':
+        return Object.assign({}, state, {
+            showDetail: action.value,
+        })
+
         default:
         return state;
 

@@ -10,6 +10,8 @@ import TimeStamp from '../../common/_timestamp';
 
 import Input from './_input';
 import Items from './_items';
+import ImageDetail from './_image_detail';
+import UserDetail from './_user_detail';
 
 class App extends React.Component {
 
@@ -129,11 +131,9 @@ class App extends React.Component {
         };
 
         let RemoveMessages = (data) => {
-
             delete Message[data.key];
             this.actions.Messages(Message);
             this.SetScroll();
-
         };
 
         this.messagesRef.off();
@@ -175,30 +175,6 @@ class App extends React.Component {
         }
     }
 
-    ShowUserDetail(e) {
-        let thumb = e.currentTarget.dataset.thumb,
-            name = e.currentTarget.dataset.name;
-        this.refs.user_thumb.style.backgroundImage = "url(" + thumb + ")";
-        this.refs.user_name.innerHTML = name;
-        this.refs.user_detail.classList.add("show");
-    }
-    HideUserDetail(e) {
-        this.refs.user_detail.classList.remove("show");
-    }
-
-    ShowImageDetail(e) {
-        this.refs.image_src.style.backgroundImage = null;
-        this.refs.image_download.href = null;
-        this.refs.image_src.style.backgroundImage = "url(" + e.currentTarget.src + ")";
-        this.refs.image_download.href = e.currentTarget.src;
-        setTimeout( () => {
-            this.refs.image_detail.classList.add("show");
-        },1 )
-    }
-    HideImageDetail(e) {
-        this.refs.image_detail.classList.remove("show");
-    }
-
     render() {
 
         this.state = this.props.state;
@@ -225,8 +201,6 @@ class App extends React.Component {
 
                             <Items
                                 setScroll={this.SetScroll.bind(this)}
-                                ShowUserDetail={this.ShowUserDetail.bind(this)}
-                                ShowImageDetail={this.ShowImageDetail.bind(this)}
                                 actions={this.actions}
                                 state={this.state}
                                 roomId={this.roomId}
@@ -238,20 +212,12 @@ class App extends React.Component {
 
                 </div>
 
-                <div className="user-detail" ref="user_detail">
-                    <div className="bg" onClick={this.HideUserDetail.bind(this)}></div>
-                    <div className="user-wrap" ref="user_wrap">
-                        <figure className="user-thumb" ref="user_thumb"></figure>
-                        <p className="user-name" ref="user_name">user name</p>
-                    </div>
-                </div>
-
-                <div className="image-detail" ref="image_detail">
-                    <button className="close" onClick={this.HideImageDetail.bind(this)}></button>
-                    <a className="download" ref="image_download" download target="_blank">download</a>
-                    <div className="bg"></div>
-                    <figure className="image-src"><span ref="image_src"></span></figure>
-                </div>
+                <UserDetail
+                    actions={this.actions}
+                    state={this.state} />
+                <ImageDetail
+                    actions={this.actions}
+                    state={this.state} />
 
                 <Input
                     roomId={this.roomId}

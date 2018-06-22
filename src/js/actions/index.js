@@ -7,9 +7,13 @@ const Meta = (value) => {
 const Messages = (value) => {
     return { type: "MESSAGES", value };
 }
+const ShowDetail = (value) => {
+    return { type: "SHOW_DETAIL", value };
+}
 
 export {
     Login,
     Meta,
-    Messages
+    Messages,
+    ShowDetail
 }

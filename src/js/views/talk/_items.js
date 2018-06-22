@@ -14,6 +14,25 @@ class Input extends React.Component {
     componentDidUpdate() {
     }
 
+    ShowUserDetail(e) {
+        let showDetail = this.state.showDetail || {};
+        showDetail["user"] = {
+            show: true,
+            thumb : e.currentTarget.dataset.thumb,
+            name : e.currentTarget.dataset.name
+        }
+        this.actions.ShowDetail(showDetail);
+    }
+
+    ShowImageDetail(e) {
+        let showDetail = this.state.showDetail || {};
+        showDetail["image"] = {
+            show: true,
+            src : e.currentTarget.src
+        }
+        this.actions.ShowDetail(showDetail);
+    }
+
     Remove(thisTalk,e) {
 
         let talkId = e.currentTarget.dataset.id;
@@ -40,7 +59,7 @@ class Input extends React.Component {
 
     CreateImg(imageUri,talkId) {
 
-        let img = imageUri != "pre_upload" ? <img onClick={this.props.ShowImageDetail} src={imageUri} onLoad={this.setScroll} /> : null;
+        let img = imageUri != "pre_upload" ? <img onClick={this.ShowImageDetail.bind(this)} src={imageUri} onLoad={this.setScroll} /> : null;
 
         return <figure className="messages-img">{img}</figure>;
 
@@ -62,7 +81,7 @@ class Input extends React.Component {
                                         data-name={thisTalk.name}
                                         data-thumb={thisTalk.thumb}
                                         style={ thisTalk.thumb ? { "backgroundImage": "url("+ thisTalk.thumb +")" } : null }
-                                        onClick={this.props.ShowUserDetail}></button> : null;
+                                        onClick={this.ShowUserDetail.bind(this)}></button> : null;
 
                 let remove = own ? <button
                                         className="messages-remove"
