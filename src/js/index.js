@@ -48,6 +48,10 @@ window.onload = () => {
     window.auth = firebase.auth();
     window.database = firebase.database();
     window.storage = firebase.storage();
+
+    window.usersRef = window.database.ref('users');
+    window.metaRef = window.database.ref('meta');
+    window.messagesRef = window.database.ref('messages');
     /* Firebase Initialize */
 
     ReactDOM.render(

@@ -15,30 +15,31 @@
 //
 // }
 
-const Fetch = (actions,roomId) => {
+const Fetch = (actions,myAccount) => {
 
-    GetMetaData(actions);
+    GetMetaData(actions,myAccount);
 
 }
 
-function GetMetaData(actions) {
-
-    let metaRef = window.metaRef = window.database.ref('meta').orderByChild('timestamp'); //orderByChildは昇順になる
+function GetMetaData(actions,myAccount) {
 
     let meta = {}, timer;
 
     let SetMeta = (data) => {
-        meta[data.key] = data.val();
+        let val = data.val();
+        if (val.members.hasOwnProperty(myAccount.uid)) {
+            meta[data.key] = data.val();
+        }
         clearTimeout(timer);
         timer = setTimeout( () => {
             actions.Meta(meta);
         },1)
     };
 
-    metaRef.off();
-    metaRef.on('child_added', SetMeta);
-    metaRef.on('child_changed', SetMeta);
-    metaRef.on('child_removed', (data) => {
+    window.metaRef.off();
+    window.metaRef.on('child_added', SetMeta);
+    window.metaRef.on('child_changed', SetMeta);
+    window.metaRef.on('child_removed', (data) => {
         delete meta[data.key];
         actions.Meta(meta);
     });

@@ -18,7 +18,6 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.usersRef = null;
     }
 
     componentDidMount() {
@@ -26,7 +25,7 @@ class App extends React.Component {
     }
 
     componentDidUpdate() {
-        if(this.myAccount && !this.meta) Fetch(this.actions);
+        if(this.myAccount && !this.meta) Fetch(this.actions,this.myAccount);
         if( this.meta ) {
             this.UpdateMeta();
             this.CheckIndexedDB();
@@ -45,17 +44,14 @@ class App extends React.Component {
 
     UpdateMeta() {
 
-        let messagesRef = window.database.ref('messages'),
-            metaRef = window.database.ref('meta');
-
         let SetMeta = (roomId,data) => {
             let updates = {};
                 updates['/lastMessage'] = data.message ? data.message : "画像を送信しました";
                 updates['/timestamp'] = data.timestamp;
-            metaRef.child(roomId).update(updates);
+            window.metaRef.child(roomId).update(updates);
         }
 
-        messagesRef.once('value').then( (snapshot) => {
+        window.messagesRef.once('value').then( (snapshot) => {
             let data = snapshot.val();
             let meta = this.meta;
 
@@ -87,8 +83,7 @@ class App extends React.Component {
                     thumb: user.photoURL
                 });
 
-                this.usersRef = window.database.ref('users');
-                this.usersRef.child(user.uid).once('value').then( (snapshot) => {
+                window.usersRef.child(user.uid).once('value').then( (snapshot) => {
                     let data = snapshot.val();
                     if(data && data.rooms) {
                         this.actions.Login({
@@ -130,27 +125,31 @@ class App extends React.Component {
 
         let roomId = e.currentTarget.id;
         let partnerData = {
-            "uid": "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
-            "name": "斎藤大輝",
-            "thumb": "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
+            uid: "qIGf0AzOcIgsTOF1uhYOjEMACZm1",
+            name: "斎藤大輝",
+            thumb: "https://lh3.googleusercontent.com/-UNIWopLLAu4/AAAAAAAAAAI/AAAAAAAAKVo/TLHxya8I6UE/photo.jpg",
+        },
+        def = {
+            message: "こんにちは、" + partnerData.name + "です。",
+            timestamp: new Date().getTime()
         }
 
         ////トーク一覧用のMetaを新しく生成
         let metaRef = window.database.ref( 'meta/' + roomId );
         let metaData = {
-            "lastMessage": "こんにちは、はじめまして。",
-            "timestamp": new Date().getTime(),
-            "members": {}
+            lastMessage: def.message,
+            timestamp: def.timestamp,
+            members: {}
         };
         metaData["members"][partnerData.uid] = {
-            "name": partnerData.name,
-            "thumb": partnerData.thumb,
-            "readed": false
+            name: partnerData.name,
+            thumb: partnerData.thumb,
+            readed: false
         }
         metaData["members"][this.myAccount.uid] = {
-            "name": this.myAccount.name,
-            "thumb": this.myAccount.thumb,
-            "readed": false
+            name: this.myAccount.name,
+            thumb: this.myAccount.thumb,
+            readed: false
         }
         metaRef.set(metaData).then( () => {
             console.log("new Talk Room : meta");
@@ -158,32 +157,32 @@ class App extends React.Component {
 
 
         ////トークの初期データを生成
-        let messagesRef = window.database.ref( 'messages/' + roomId );
+        let messagesRef = window.messagesRef.child(roomId);
         messagesRef.push({
-            "name": partnerData.name,
-            "uid": partnerData.uid,
-            "thumb": partnerData.thumb,
-            "message": "こんにちは、はじめまして。",
-            "timestamp": new Date().getTime()
+            name: partnerData.name,
+            uid: partnerData.uid,
+            thumb: partnerData.thumb,
+            message: def.message,
+            timestamp: def.timestamp
         }).then( () => {
             console.log("new Talk Room : messages");
         });
 
 
         //データベースuserにroomsに追加（自分の分）r
-        this.usersRef.child(this.myAccount.uid).once('value').then( (snapshot) => {
+        window.usersRef.child(this.myAccount.uid).once('value').then( (snapshot) => {
             let data = snapshot.val();
             let updates = {};
             updates['/rooms/' + roomId] = true;
-            this.usersRef.child(this.myAccount.uid).update(updates);
+            window.usersRef.child(this.myAccount.uid).update(updates);
         });
 
         //データベースuserにroomsに追加（相手の分）
-        this.usersRef.child(partnerData.uid).once('value').then( (snapshot) => {
+        window.usersRef.child(partnerData.uid).once('value').then( (snapshot) => {
             let data = snapshot.val();
             let updates = {};
             updates['/rooms/' + roomId] = true;
-            this.usersRef.child(partnerData.uid).update(updates);
+            window.usersRef.child(partnerData.uid).update(updates);
         });
 
 

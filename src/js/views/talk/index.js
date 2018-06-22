@@ -21,8 +21,8 @@ class App extends React.Component {
 
     componentWillMount() {
         this.roomId = this.props.match.params.id;
-        this.messagesRef = window.database.ref( 'messages/' + this.roomId );
-        this.metaRef = window.database.ref( 'meta/' + this.roomId );
+        this.messagesRef = window.messagesRef.child(this.roomId);
+        this.metaRef = window.metaRef.child(this.roomId);
     }
     componentDidMount() {
 
