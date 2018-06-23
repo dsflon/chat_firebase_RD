@@ -46,13 +46,14 @@ class ChatIndexDB {
             this.chatDB.onerror = this.Onerror.bind(this);
             this.chatDB.onsuccess = (e) => {
                 this.Onsuccess(e);
-                callback();
+                console.log("DB Set Onsuccess");
+                if(callback) callback();
             }
             this.chatDB.onupgradeneeded = (e) => {
                 this.Onupgradeneeded(e,storeName);
             }
         } else {
-            callback();
+            if(callback) callback();
         }
 
     }

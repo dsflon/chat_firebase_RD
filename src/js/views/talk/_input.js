@@ -84,6 +84,7 @@ class Input extends React.Component {
     PostMessage(e) {
 
         e.preventDefault();
+        this.refs.mess_input.focus();
         let value = this.refs.mess_input.value;
         if (value) this.Post({ message: value })
 

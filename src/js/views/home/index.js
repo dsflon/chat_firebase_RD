@@ -36,6 +36,10 @@ class App extends React.Component {
     CheckIndexedDB() { // IndexedDBをチェックして利用していないものは削除する
         let stores = window.ChatIndexDB.stores,
             metaKey = Object.keys(this.meta);
+
+        // for (var i = 0; i < metaKey.length; i++) {
+        //     window.ChatIndexDB.Set(metaKey[i])
+        // }
         for (var i = 0; i < stores.length; i++) {
             if( metaKey.indexOf(stores[i]) === -1 ) {
                 window.ChatIndexDB.RemoveStore(stores[i]);

@@ -28,6 +28,11 @@ class App extends React.Component {
 
         if( !this.state.meta ) this.history.push("/");
 
+        for (var roomId in this.state.meta) {
+            window.messagesRef.child(roomId).off();
+            window.metaRef.child(roomId).off();
+        }
+
         window.ChatIndexDB.GetAll(this.roomId,(e) => {
 
             let result = e.target.result,
@@ -52,6 +57,9 @@ class App extends React.Component {
 
     componentDidUpdate() {
         this.Readed();
+        // this.messagesRef.once("value").then( (snapshot) => {
+        //     console.log(snapshot.key);
+        // })
     }
 
 
