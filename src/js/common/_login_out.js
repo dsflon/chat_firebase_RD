@@ -21,7 +21,7 @@ const Log = {
             },1)
         };
 
-        window.auth.signInWithPopup(provider).then( (result) => {
+        window.auth.signInWithRedirect(provider).then( (result) => {
 
             myData = result.user;
 
