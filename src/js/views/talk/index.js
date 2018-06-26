@@ -28,7 +28,7 @@ class App extends React.Component {
 
         if( !this.state.meta ) this.history.push("/");
 
-        for (var roomId in this.state.meta) {
+        for (var roomId in this.state.meta) { // 前回データが残らないようにここで全部リセット
             window.messagesRef.child(roomId).off();
             window.metaRef.child(roomId).off();
         }
@@ -57,9 +57,6 @@ class App extends React.Component {
 
     componentDidUpdate() {
         this.Readed();
-        // this.messagesRef.once("value").then( (snapshot) => {
-        //     console.log(snapshot.key);
-        // })
     }
 
 
@@ -81,7 +78,6 @@ class App extends React.Component {
         if(!this.refs.page_scroll) return true;
         this.refs.page_scroll.scrollTop = this.refs.page_scroll.scrollHeight;
     }
-
 
     UploadBlob(data) {
 
