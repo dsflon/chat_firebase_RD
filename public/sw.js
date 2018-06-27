@@ -1,13 +1,14 @@
-const VERSION = '1.0.0';
+const VERSION = '1.0.2';
 
 const CACHE_NAME = 'chatText' + VERSION;
 const DATA_CACHE_NAME = 'chatTextData' + VERSION;
 
+const ROOT = "./";
 const CACHE_FILE = [
-    './',
-    './index.html',
-    './bundle.js',
-    './vendor.js'
+    ROOT,
+    ROOT + 'index.html',
+    ROOT + 'bundle.js',
+    ROOT + 'vendor.js'
 ];
 
 self.addEventListener('install', function(event) {
@@ -46,7 +47,21 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('fetch', function(event) {
 
-    console.log('ServiceWorker fetching ', event.request.url);
+    let url = event.request.url;
+        url = url.split("/");
+        url = url[ url.length - 1 ];
+
+    if( CACHE_FILE.indexOf(ROOT + url) != -1 ) {
+
+        console.log('fetch request for app shell');
+
+        event.respondWith(
+            caches.match(event.request).then(function(response) {
+                return response || fetch(event.request);
+            })
+        );
+
+    }
 
     // var baseUrl = 'https://query.yahooapis.com/';
     //
@@ -65,13 +80,13 @@ self.addEventListener('fetch', function(event) {
     //
     // } else {
 
-        // console.log('fetch request for app shell');
-
-        event.respondWith(
-            caches.match(event.request).then(function(response) {
-                return response || fetch(event.request);
-            })
-        );
+        // // console.log('fetch request for app shell');
+        //
+        // event.respondWith(
+        //     caches.match(event.request).then(function(response) {
+        //         return response || fetch(event.request);
+        //     })
+        // );
 
     // }
 
