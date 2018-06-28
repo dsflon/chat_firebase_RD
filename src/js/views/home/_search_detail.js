@@ -8,18 +8,8 @@ class SearchDetail extends React.Component {
     }
 
     componentDidMount() {
-        this.getUserData();
     }
     componentDidUpdate() {
-        this.getUserData();
-    }
-
-    getUserData() {
-        if(!this.state.myAccount) return false;
-
-        window.usersRef.once('value').then( (snapshot) => {
-            this.data = snapshot.val();
-        });
     }
 
     Click(partnerData,e) {
@@ -33,18 +23,18 @@ class SearchDetail extends React.Component {
         this.actions.ShowDetail(showDetail);
     }
 
-    GetUsers() {
+    GetUsers(data) {
 
         let userItem = [];
 
         let myFriends = this.state.myAccount.friends ? Object.keys(this.state.myAccount.friends) : [];
         myFriends.push(this.state.myAccount.uid);
 
-        for (var uid in this.data) {
+        for (var uid in data) {
 
             if( myFriends.indexOf(uid) === -1 ) {
 
-                let member = this.data[uid];
+                let member = data[uid];
 
                 let partnerData = {
                     uid: uid,
@@ -86,7 +76,9 @@ class SearchDetail extends React.Component {
         this.CreateNewTalk = this.props.CreateNewTalk;
 
         let search = this.state.showDetail ? this.state.showDetail.search : null;
-        let users = search && search.show ? this.GetUsers() : null;
+
+        let data = search ? search.data : null,
+            users = search && search.show ? this.GetUsers(data) : null;
 
         return (
             <div className={"search-detail" + (search && search.show ? " show" : "") }>

@@ -13,10 +13,15 @@ class Header extends React.Component {
 
     ShowSearchDetail(e) {
         let showDetail = this.state.showDetail || {};
-        showDetail["search"] = {
-            show: true
-        }
-        this.actions.ShowDetail(showDetail);
+
+        window.usersRef.once('value').then( (snapshot) => {
+            showDetail["search"] = {
+                show: true,
+                data: snapshot.val()
+            }
+            this.actions.ShowDetail(showDetail);
+        });
+        
     }
 
     OpenLogout(e) {

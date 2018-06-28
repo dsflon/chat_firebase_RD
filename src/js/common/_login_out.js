@@ -5,34 +5,22 @@ const Log = {
     In: () => {
 
         let provider = new firebase.auth.GoogleAuthProvider();
-        let users = {}, myData, timer;
+        // let users = {}, myData, timer;
+        //
+        // let SetUsers = (data) => {
+        //     users[data.key] = data.val();
+        //     clearTimeout(timer);
+        //     timer = setTimeout( () => {
+        //         if ( !users.hasOwnProperty(myData.uid) ) {
+        //             window.usersRef.child(myData.uid).set({
+        //                 name: myData.displayName,
+        //                 thumb: myData.photoURL
+        //             });
+        //         }
+        //     },1)
+        // };
 
-        let SetUsers = (data) => {
-            users[data.key] = data.val();
-            clearTimeout(timer);
-            timer = setTimeout( () => {
-                if ( !users.hasOwnProperty(myData.uid) ) {
-                    window.usersRef.child(myData.uid).set({
-                        name: myData.displayName,
-                        thumb: myData.photoURL,
-                        rooms: []
-                    });
-                }
-            },1)
-        };
-
-        window.auth.signInWithRedirect(provider).then( (result) => {
-
-            myData = result.user;
-
-            window.usersRef.off();
-            window.usersRef.on('child_added', SetUsers);
-
-            console.log("ログインしました。");
-
-        }).catch( (error) => {
-            alert(error.message);
-        });
+        window.auth.signInWithRedirect(provider);
 
     },
 

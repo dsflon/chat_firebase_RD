@@ -73,12 +73,20 @@ class App extends React.Component {
 
     }
 
+    UpdateUsers(data) {
+        let val = data.val();
+        let updateFriends = this.myAccount;
+        if( data.key == this.myAccount.uid ) {
+            updateFriends['rooms'] = val.rooms;
+            updateFriends['friends'] = val.friends;
+            this.actions.Login(updateFriends);
+        }
+    }
+
     CheckLogin() {
 
         window.auth.onAuthStateChanged( (user) => {
-
             if (user) { // User is signed in!
-
                 this.actions.Login({
                     uid: user.uid,
                     name: user.displayName,
@@ -86,26 +94,21 @@ class App extends React.Component {
                     rooms: {},
                     friends: {}
                 });
-
                 window.usersRef.child(user.uid).once('value').then( (snapshot) => {
-                    let data = snapshot.val();
-                    if(data && data.rooms && data.friends) {
-                        this.actions.Login({
-                            uid: user.uid,
+                    if(!snapshot.val()) {
+                        window.usersRef.child(user.uid).set({
                             name: user.displayName,
-                            thumb: user.photoURL,
-                            rooms: data.rooms,
-                            friends: data.friends
+                            thumb: user.photoURL
                         });
+                        console.log("Added new user: " + user.uid);
                     }
                 });
-
+                window.usersRef.off();
+                window.usersRef.on('child_added', this.UpdateUsers.bind(this));
+                window.usersRef.on('child_changed', this.UpdateUsers.bind(this));
             } else { // User is signed out!
-
                 this.actions.Login(null);
-
             }
-
         })
     }
 
@@ -186,15 +189,6 @@ class App extends React.Component {
                 thumb: partnerData.thumb,
             };
             window.usersRef.child(this.myAccount.uid).update(updates);
-
-            let updateFriends = this.myAccount;
-            updateFriends['rooms'][roomId] = true;
-            updateFriends["friends"][partnerData.uid] = {
-                name: partnerData.name,
-                thumb: partnerData.thumb,
-            };
-            this.actions.Login(updateFriends);
-
         });
 
         //データベースuserにroomsに追加（相手の分）
