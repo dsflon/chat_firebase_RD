@@ -62,13 +62,16 @@ class ChatIndexDB {
 
         if( !putData ) return true;
 
-        let trans = this.db.transaction([storeName], 'readwrite'),
+        let trans = this.db.transaction(storeName, 'readwrite'),
             store = trans.objectStore(storeName),
             putReq = store.put(putData);
 
         putReq.onsuccess = (e) => {
             let result = (e.target) ? e.target.result : e.result;
             console.log('put data success');
+        }
+        putReq.onerror = (e) => {
+            console.error(e.target.error.message);
         }
         trans.oncomplete = () => {
             // console.log('transaction complete');
@@ -92,7 +95,7 @@ class ChatIndexDB {
 
         if( !this.db || this.stores.indexOf(storeName) == -1 ) return true;
 
-        let trans = this.db.transaction([storeName], 'readonly'),
+        let trans = this.db.transaction(storeName, 'readonly'),
             store = trans.objectStore(storeName),
             getReq = store.getAll();
 
@@ -103,7 +106,7 @@ class ChatIndexDB {
 
         if( !this.db ) return true;
 
-        let trans = this.db.transaction([storeName], 'readwrite'),
+        let trans = this.db.transaction(storeName, 'readwrite'),
             store = trans.objectStore(storeName),
             deleteRequest = store.delete(talkId);
 

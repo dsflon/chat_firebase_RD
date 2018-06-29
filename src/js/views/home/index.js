@@ -22,7 +22,10 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        if( !this.myAccount ) this.CheckLogin();
+        if( !this.myAccount ) {
+            this.CheckLogin();
+            this.ShowLoading();
+        }
     }
 
     componentDidUpdate() {
@@ -102,12 +105,14 @@ class App extends React.Component {
                         });
                         console.log("Added new user: " + user.uid);
                     }
+                    this.HideLoading();
                 });
                 window.usersRef.off();
                 window.usersRef.on('child_added', this.UpdateUsers.bind(this));
                 window.usersRef.on('child_changed', this.UpdateUsers.bind(this));
             } else { // User is signed out!
                 this.actions.Login(null);
+                this.HideLoading();
             }
         })
     }

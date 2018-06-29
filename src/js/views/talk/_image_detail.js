@@ -18,14 +18,15 @@ class ImageDetail extends React.Component {
         this.actions = this.props.actions;
 
         let image = this.state.showDetail ? this.state.showDetail.image : null,
-            src = image && image.src ? { "backgroundImage": "url(" + image.src + ")" } : null;
+            src = image && image.src ? image.src: null,
+            style = image && image.src ? { "backgroundImage": "url(" + image.src + ")" } : null;
 
         return (
             <div className={"image-detail" + (image && image.show ? " show" : "") }>
                 <button className="close" onClick={this.HideImageDetail.bind(this)}></button>
-                <a className="download" download target="_blank">download</a>
+                <a className="download" href={src} download target="_blank">download</a>
                 <div className="bg"></div>
-                <figure className="image-src"><span style={src}></span></figure>
+                <figure className="image-src"><span style={style}></span></figure>
             </div>
         );
 

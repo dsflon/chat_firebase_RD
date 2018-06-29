@@ -26,6 +26,8 @@ class App extends React.Component {
     }
     componentDidMount() {
 
+        this.ShowLoading();
+
         if( !this.state.meta ) this.history.push("/");
 
         for (var roomId in this.state.meta) { // 前回データが残らないようにここで全部リセット
@@ -35,13 +37,13 @@ class App extends React.Component {
 
         window.ChatIndexDB.GetAll(this.roomId,(e) => {
 
-            let result = e.target.result,
+            let result = e.target ? e.target.result : e.result,
                 imagesDB = {};
 
             if (!!result == false) return;
 
             for (var i = 0; i < result.length; i++) {
-                let blob = result[i].blob,
+                let blob = result[i].arraybuffer ? new Blob([result[i].arraybuffer]) : result[i].blob,
                     URL = window.URL || window.webkitURL,
                     imgURL = URL.createObjectURL(blob);
 
@@ -59,6 +61,8 @@ class App extends React.Component {
         this.Readed();
     }
 
+    ShowLoading() { this.refs.page_scroll.classList.add("loading"); }
+    HideLoading() { this.refs.page_scroll.classList.remove("loading"); }
 
     Readed() {
         //相手のアカウントに対して "readed" をつける必要がある。
@@ -83,17 +87,19 @@ class App extends React.Component {
 
         // // 画像パスから blob を取得
         let xhr = new XMLHttpRequest();
-        xhr.responseType = 'blob';
+        xhr.responseType = 'arraybuffer';
         xhr.onload = (e) => {
+
+            let arraybuffer = e.target.response,
+                blob = new Blob([arraybuffer]);
 
             window.ChatIndexDB.Put(this.roomId,{
                 talkId: data.talkId,
                 timestamp: data.timestamp,
-                blob: xhr.response
+                arraybuffer: arraybuffer
             });
 
-            let blob = xhr.response,
-                URL = window.URL || window.webkitURL,
+            let URL = window.URL || window.webkitURL,
                 imgURL = URL.createObjectURL(blob);
             let messages = this.state.messages;
                 messages[data.talkId]["image"] = imgURL;
@@ -131,6 +137,7 @@ class App extends React.Component {
             timer = setTimeout( () => {
                 this.actions.Messages(Message);
                 this.SetScroll();
+                this.HideLoading();
             },1)
         };
 

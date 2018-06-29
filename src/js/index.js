@@ -17,6 +17,9 @@ import ChatIndexDB from './common/_indexedDB'
 //scss
 import '../scss/style.scss'
 
+import Ua from './libs/j_ua';
+const UA = new Ua();
+
 window.LOADING_IMAGE = 'https://www.google.com/images/spin-32.gif';
 
 /* Firebase Initialize */
@@ -31,8 +34,6 @@ const config = {
 firebase.initializeApp(config);
 /* Firebase Initialize */
 
-
-
 const initialState = {
     myAccount: null,
     meta: null,
@@ -40,6 +41,9 @@ const initialState = {
 };
 let store = createStore(reducer,initialState)
 
+/*
+** Indexed DB
+*/
 window.ChatIndexDB = new ChatIndexDB();
 
 window.onload = () => {
@@ -54,6 +58,9 @@ window.onload = () => {
     window.messagesRef = window.database.ref('messages');
     /* Firebase Initialize */
 
+    /*
+    ** React
+    */
     ReactDOM.render(
         <Provider store={store}>
             <Root />
@@ -63,7 +70,10 @@ window.onload = () => {
 
 };
 
-if ('serviceWorker' in navigator) {
+/*
+** Service Worker
+*/
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
     navigator.serviceWorker
     .register('./sw.js')
     .then(function() {
