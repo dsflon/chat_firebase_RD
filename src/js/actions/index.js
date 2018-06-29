@@ -7,6 +7,9 @@ const Meta = (value) => {
 const Messages = (value) => {
     return { type: "MESSAGES", value };
 }
+const ImagesDB = (value) => {
+    return { type: "IMAGE_DB", value };
+}
 const ShowDetail = (value) => {
     return { type: "SHOW_DETAIL", value };
 }
@@ -15,5 +18,6 @@ export {
     Login,
     Meta,
     Messages,
-    ShowDetail
+    ShowDetail,
+    ImagesDB
 }

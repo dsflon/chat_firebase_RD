@@ -17,6 +17,11 @@ const reducer = (state, action) => {
             messages: action.value,
         })
 
+        case 'IMAGE_DB':
+        return Object.assign({}, state, {
+            imagesDB: action.value,
+        })
+
         case 'SHOW_DETAIL':
         return Object.assign({}, state, {
             showDetail: action.value,

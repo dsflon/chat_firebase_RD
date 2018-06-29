@@ -26,34 +26,17 @@ class App extends React.Component {
     }
     componentDidMount() {
 
-        this.ShowLoading();
+        if( !this.state.meta ) {
+            this.history.push("/");
+        } else {
+            this.ShowLoading();
+            setTimeout(this.GetMessageData.bind(this),1);
 
-        if( !this.state.meta ) this.history.push("/");
-
-        for (var roomId in this.state.meta) { // 前回データが残らないようにここで全部リセット
-            window.messagesRef.child(roomId).off();
-            window.metaRef.child(roomId).off();
-        }
-
-        window.ChatIndexDB.GetAll(this.roomId,(e) => {
-
-            let result = e.target ? e.target.result : e.result,
-                imagesDB = {};
-
-            if (!!result == false) return;
-
-            for (var i = 0; i < result.length; i++) {
-                let blob = result[i].arraybuffer ? new Blob([result[i].arraybuffer]) : result[i].blob,
-                    URL = window.URL || window.webkitURL,
-                    imgURL = URL.createObjectURL(blob);
-
-                imagesDB[result[i].talkId] = imgURL;
-                URL.revokeObjectURL(blob);
+            for (var roomId in this.state.meta) { // 前回データが残らないようにここで全部リセット
+                window.messagesRef.child(roomId).off();
+                window.metaRef.child(roomId).off();
             }
-
-            this.GetMessageData(imagesDB);
-
-        });
+        }
 
     }
 
@@ -61,8 +44,8 @@ class App extends React.Component {
         this.Readed();
     }
 
-    ShowLoading() { this.refs.page_scroll.classList.add("loading"); }
-    HideLoading() { this.refs.page_scroll.classList.remove("loading"); }
+    ShowLoading() { if(this.refs.page_scroll) this.refs.page_scroll.classList.add("loading"); }
+    HideLoading() { if(this.refs.page_scroll) this.refs.page_scroll.classList.remove("loading"); }
 
     Readed() {
         //相手のアカウントに対して "readed" をつける必要がある。
@@ -83,7 +66,7 @@ class App extends React.Component {
         this.refs.page_scroll.scrollTop = this.refs.page_scroll.scrollHeight;
     }
 
-    UploadBlob(data) {
+    UploadArrayBuffer(data) {
 
         // // 画像パスから blob を取得
         let xhr = new XMLHttpRequest();
@@ -113,31 +96,29 @@ class App extends React.Component {
 
     }
 
+    GetMessageData() {
 
-    GetMessageData(imagesDB) {
-
+        let imagesDB = this.state.imagesDB;
         let Message = {}, timer;
 
         let SetMessages = (data) => {
             Message[data.key] = data.val();
-
             if( Message[data.key].image && Message[data.key].image != "pre_upload" ) {
                 if (imagesDB.hasOwnProperty(data.key)) {
                     Message[data.key].image = imagesDB[data.key];
                 } else {
-                    this.UploadBlob({
+                    this.UploadArrayBuffer({
                         image: Message[data.key].image,
                         talkId: data.key,
                         timestamp: Message[data.key].timestamp
                     })
                 }
             }
-
             clearTimeout(timer);
             timer = setTimeout( () => {
+                this.HideLoading();
                 this.actions.Messages(Message);
                 this.SetScroll();
-                this.HideLoading();
             },1)
         };
 

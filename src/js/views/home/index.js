@@ -129,10 +129,39 @@ class App extends React.Component {
         let id = e.currentTarget.id;
         if( id !== prevId ) this.actions.Messages(null);
 
-        window.ChatIndexDB.Set(id,() => {
-            this.HideLoading();
-            this.history.push("/talk/"+id);
-        });
+        let SetDB = () => {
+            return new Promise((resolve, reject) => {
+                window.ChatIndexDB.Set(id,resolve);
+            });
+        }
+        let GetAllDB = () => {
+            return new Promise((resolve, reject) => {
+                window.ChatIndexDB.GetAll(id,(e) => {
+
+                    let result = e.target ? e.target.result : e.result,
+                        imagesDB = {};
+
+                    if (!!result == false) return;
+
+                    for (var i = 0; i < result.length; i++) {
+                        let blob = result[i].arraybuffer ? new Blob([result[i].arraybuffer]) : result[i].blob,
+                            URL = window.URL || window.webkitURL,
+                            imgURL = URL.createObjectURL(blob);
+                        imagesDB[result[i].talkId] = imgURL;
+                        URL.revokeObjectURL(blob);
+                    }
+
+                    this.actions.ImagesDB(imagesDB);
+                    this.HideLoading();
+                    this.history.push("/talk/"+id);
+
+                });
+            });
+        }
+
+        Promise.resolve()
+        .then(SetDB) // DBをセットし
+        .then(GetAllDB); // FB内容を取得できたら
 
         prevId = id;
 
