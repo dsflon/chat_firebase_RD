@@ -137,7 +137,7 @@ class App extends React.Component {
         this.messagesRef.once("value").then( (snapshot) => {
 
             let data = snapshot.val(),
-                talkIds = Object.keys(imagesDB);
+                talkIds = imagesDB ? Object.keys(imagesDB) : [];
 
             for (var i = 0; i < talkIds.length; i++) {
                 if( !data[talkIds[i]] ) {
