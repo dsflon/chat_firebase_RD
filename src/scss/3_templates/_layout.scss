@@ -108,7 +108,7 @@
         position: fixed;
         left: 0; bottom: 0;
         width: 100%;
-        z-index: 999;
+        z-index: 99;
         line-height: 1;
         box-shadow: 0 -1px 5px 0 rgba(#000,0.05);
         height: 54px;
@@ -121,6 +121,7 @@
             opacity: 0;
             pointer-events: none;
             transition: all 0.1s ease;
+            z-index: 9999;
         }
         &:before {
             @include loading($size:80px,$width:2px,$baseColor:#000,$barColor:rgba(0,0,0, 0.0),$speed:0.8);
