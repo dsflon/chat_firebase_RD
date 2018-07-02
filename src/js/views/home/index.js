@@ -136,9 +136,12 @@ class App extends React.Component {
         let id = e.currentTarget.id;
         if( id !== prevId ) this.actions.Messages(null);
 
+        let timer;
+
         let SetDB = () => {
             return new Promise((resolve, reject) => {
                 window.ChatIndexDB.Set(id,resolve);
+                timer = setTimeout( () => { location.reload() }, 5000);
             });
         }
         let GetAllDB = () => {
@@ -161,6 +164,8 @@ class App extends React.Component {
                     this.actions.ImagesDB(imagesDB);
                     this.HideLoading();
                     this.history.push("/talk/"+id);
+
+                    clearTimeout(timer)
 
                 });
             });

@@ -27,7 +27,7 @@ function GetMetaData(actions,myAccount) {
 
     let SetMeta = (data) => {
         let val = data.val();
-        if (val.members.hasOwnProperty(myAccount.uid)) {
+        if (val.members && val.members.hasOwnProperty(myAccount.uid)) {
             meta[data.key] = data.val();
         }
         clearTimeout(timer);
@@ -43,6 +43,12 @@ function GetMetaData(actions,myAccount) {
         delete meta[data.key];
         actions.Meta(meta);
     });
+    window.metaRef.once('value').then( (snapshot) => {
+        // DBにMetaがなくても実行できるように
+        let data = snapshot.val();
+        if( !data ) actions.Meta({});
+    });
+
 
 }
 
