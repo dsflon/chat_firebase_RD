@@ -21,7 +21,7 @@ class Header extends React.Component {
             }
             this.actions.ShowDetail(showDetail);
         });
-        
+
     }
 
     OpenLogout(e) {

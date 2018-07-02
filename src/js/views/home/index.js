@@ -8,6 +8,7 @@ import Items from './_items';
 import Header from './_header';
 import SearchDetail from './_search_detail';
 
+import ChatIndexDB from '../../common/_indexedDB'
 import Log from '../../common/_login_out';
 import Fetch from '../../common/_fetch';
 import TimeStamp from '../../common/_timestamp';
@@ -110,6 +111,12 @@ class App extends React.Component {
                 window.usersRef.off();
                 window.usersRef.on('child_added', this.UpdateUsers.bind(this));
                 window.usersRef.on('child_changed', this.UpdateUsers.bind(this));
+
+                /*
+                ** Indexed DB
+                */
+                window.ChatIndexDB = new ChatIndexDB("ChatDatabase");
+
             } else { // User is signed out!
                 this.actions.Login(null);
                 this.HideLoading();

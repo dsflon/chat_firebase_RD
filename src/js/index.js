@@ -12,8 +12,6 @@ import reducer from './reducers'
 
 import Root from './_root'
 
-import ChatIndexDB from './common/_indexedDB'
-
 //scss
 import '../scss/style.scss'
 
@@ -40,11 +38,6 @@ const initialState = {
     messages: null
 };
 let store = createStore(reducer,initialState)
-
-/*
-** Indexed DB
-*/
-window.ChatIndexDB = new ChatIndexDB();
 
 window.onload = () => {
 

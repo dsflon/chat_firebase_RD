@@ -110,6 +110,8 @@ const Log = {
 
                 usersRef.remove();
 
+                window.indexedDB.deleteDatabase("ChatDatabase");
+
                 myData.delete().then( () => { //Authentication から削除
                     location.reload(); //都合悪いからリロード
                 }).catch( (error) => {

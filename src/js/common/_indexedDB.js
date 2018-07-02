@@ -1,8 +1,8 @@
 class ChatIndexDB {
 
-    constructor(storeName) {
+    constructor(dbName) {
 
-        this.dataBaseName = "ChatDatabase";
+        this.dataBaseName = dbName;
         this.chatDB = null;
         this.db = null;
         this.dbVersion = 0;
