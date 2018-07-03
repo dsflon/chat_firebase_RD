@@ -26,10 +26,17 @@ class App extends React.Component {
     }
     componentDidMount() {
 
+        let chatStorageMess = localStorage.getItem("ChatStorageMess_"+this.roomId);
+
         if( !this.state.meta ) {
             this.history.push("/");
         } else {
             this.ShowLoading();
+
+            if(chatStorageMess) {
+                this.actions.Messages( JSON.parse(chatStorageMess) );
+                this.HideLoading();
+            }
             setTimeout(this.GetMessageData.bind(this),1);
 
             for (var roomId in this.state.meta) { // 前回データが残らないようにここで全部リセット
@@ -120,6 +127,7 @@ class App extends React.Component {
                 this.HideLoading();
                 this.actions.Messages(Message);
                 this.SetScroll();
+                localStorage.setItem("ChatStorageMess_"+this.roomId, JSON.stringify(Message));
             },1)
         };
 

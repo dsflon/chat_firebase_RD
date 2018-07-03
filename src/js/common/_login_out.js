@@ -104,6 +104,7 @@ const Log = {
                         });
 
                         meta.remove();
+                        localStorage.removeItem("ChatStorageMess_"+roomId);
 
                     }
                 }

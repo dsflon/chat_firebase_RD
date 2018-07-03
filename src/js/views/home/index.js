@@ -42,11 +42,11 @@ class App extends React.Component {
     componentDidUpdate() {
         if(this.meta) {
             this.UpdateMeta();
-            this.CheckIndexedDB();
         } else {
             Fetch(this.actions,this.myAccount);
         }
 
+        this.CheckIndexedDB();
         window.CheckNetwork();
     }
 
@@ -60,6 +60,7 @@ class App extends React.Component {
         for (var i = 0; i < stores.length; i++) {
             if( metaKey.indexOf(stores[i]) === -1 ) {
                 window.ChatIndexDB.RemoveStore(stores[i]);
+                // localStorage.removeItem("ChatStorageMess_"+stores[i]);
             }
         }
     }
