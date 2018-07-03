@@ -111,6 +111,8 @@ const Log = {
                 usersRef.remove();
 
                 window.indexedDB.deleteDatabase("ChatDatabase");
+                localStorage.removeItem("ChatStorageUser");
+                localStorage.removeItem("ChatStorageMeta");
 
                 myData.delete().then( () => { //Authentication から削除
                     location.reload(); //都合悪いからリロード

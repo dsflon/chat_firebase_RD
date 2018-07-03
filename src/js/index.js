@@ -20,7 +20,9 @@ const UA = new Ua();
 
 window.LOADING_IMAGE = 'https://www.google.com/images/spin-32.gif';
 
-/* Firebase Initialize */
+/*
+** Firebase Initialize
+*/
 const config = {
   apiKey: "AIzaSyDHqPAR21LP_y8MTQttOUl2rZR_EP0atcQ",
   authDomain: "chat-3f1a7.firebaseapp.com",
@@ -30,15 +32,33 @@ const config = {
   messagingSenderId: "1092855635066"
 };
 firebase.initializeApp(config);
-/* Firebase Initialize */
 
+
+/*
+** Create Store
+*/
 const initialState = {
     myAccount: null,
     meta: null,
     messages: null
 };
-let store = createStore(reducer,initialState)
+let store = createStore(reducer,initialState);
 
+/*
+** Check Network
+*/
+const CheckNetwork = () => {
+    let tagHtml = document.getElementsByTagName('html')[0];
+    if( !navigator.onLine ) {
+        tagHtml.classList.add("offline");
+    } else {
+        tagHtml.classList.remove("offline");
+    }
+}
+
+/*
+** Onload
+*/
 window.onload = () => {
 
     /* Firebase Initialize */
@@ -50,6 +70,8 @@ window.onload = () => {
     window.metaRef = window.database.ref('meta');
     window.messagesRef = window.database.ref('messages');
     /* Firebase Initialize */
+
+    window.CheckNetwork = CheckNetwork;
 
     /*
     ** React

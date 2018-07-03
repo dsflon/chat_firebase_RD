@@ -17,6 +17,8 @@
 
 const Fetch = (actions,myAccount) => {
 
+    if(!myAccount) return false;
+
     GetMetaData(actions,myAccount);
 
 }
@@ -33,6 +35,7 @@ function GetMetaData(actions,myAccount) {
         clearTimeout(timer);
         timer = setTimeout( () => {
             actions.Meta(meta);
+            localStorage.setItem("ChatStorageMeta", JSON.stringify(meta));
         },1)
     };
 

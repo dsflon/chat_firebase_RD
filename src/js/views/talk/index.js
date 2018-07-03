@@ -42,6 +42,7 @@ class App extends React.Component {
 
     componentDidUpdate() {
         this.Readed();
+        window.CheckNetwork();
     }
 
     ShowLoading() { if(this.refs.page_scroll) this.refs.page_scroll.classList.add("loading"); }

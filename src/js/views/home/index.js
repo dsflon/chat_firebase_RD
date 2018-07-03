@@ -23,21 +23,37 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+
+        let chatStorageUser = localStorage.getItem("ChatStorageUser"),
+            chatStorageMeta = localStorage.getItem("ChatStorageMeta");
+
         if( !this.myAccount ) {
-            this.CheckLogin();
+            if( chatStorageUser && chatStorageMeta ){
+                this.actions.Login( JSON.parse(chatStorageUser) );
+                this.actions.Meta( JSON.parse(chatStorageMeta) );
+                Fetch(this.actions,JSON.parse(chatStorageUser));
+            }
             this.ShowLoading();
+            this.CheckLogin();
         }
+
     }
 
     componentDidUpdate() {
-        if(this.myAccount && !this.meta) Fetch(this.actions,this.myAccount);
-        if( this.meta ) {
+        if(this.meta) {
             this.UpdateMeta();
             this.CheckIndexedDB();
+        } else {
+            Fetch(this.actions,this.myAccount);
         }
+
+        window.CheckNetwork();
     }
 
     CheckIndexedDB() { // IndexedDBをチェックして利用していないものは削除する
+
+        if(!window.ChatIndexDB) return false;
+
         let stores = window.ChatIndexDB.stores,
             metaKey = Object.keys(this.meta);
 
@@ -84,10 +100,13 @@ class App extends React.Component {
             updateFriends['rooms'] = val.rooms;
             updateFriends['friends'] = val.friends;
             this.actions.Login(updateFriends);
+            localStorage.setItem("ChatStorageUser", JSON.stringify(updateFriends));
         }
     }
 
     CheckLogin() {
+
+        this.HideLoading();
 
         window.auth.onAuthStateChanged( (user) => {
             if (user) { // User is signed in!
@@ -106,7 +125,6 @@ class App extends React.Component {
                         });
                         console.log("Added new user: " + user.uid);
                     }
-                    this.HideLoading();
                 });
                 window.usersRef.off();
                 window.usersRef.on('child_added', this.UpdateUsers.bind(this));

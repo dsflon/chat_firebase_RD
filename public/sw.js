@@ -1,4 +1,4 @@
-const VERSION = '1.0.8';
+const VERSION = '1.0.0';
 
 const CACHE_NAME = 'chatText' + VERSION;
 const DATA_CACHE_NAME = 'chatTextData' + VERSION;
@@ -53,41 +53,33 @@ self.addEventListener('fetch', function(event) {
 
     if( CACHE_FILE.indexOf(ROOT + url) != -1 ) {
 
-        console.log('fetch request for app shell');
-
         event.respondWith(
-            caches.match(event.request).then(function(response) {
-                return response || fetch(event.request);
+            caches.match(event.request)
+            .then(function(response) {
+
+                if (response) {
+                    // return cached file
+                    console.log('cache fetch: ' + url);
+                    return response;
+                }
+
+                // make network request
+                return fetch(event.request)
+                .then(newreq => {
+                    console.log('network fetch: ' + url);
+                    if (newreq.ok) cache.put(event.request, newreq.clone());
+                    return newreq;
+                })
+                // app is offline
+                .catch(() => {
+                    console.log("offline");
+                });
+
+                // return response || fetch(event.request);
             })
+
         );
 
     }
-
-    // var baseUrl = 'https://query.yahooapis.com/';
-    //
-    // if (event.request.url.indexOf(baseUrl) > -1) {
-    //
-    //     console.log('fetch request for feed data');
-    //
-    //     event.respondWith(
-    //         caches.open(DATA_CACHE_NAME).then(function(cache) {
-    //             return fetch(event.request).then(function(response){
-    //                 cache.put(event.request.url, response.clone());
-    //                 return response;
-    //             });
-    //         })
-    //     );
-    //
-    // } else {
-
-        // // console.log('fetch request for app shell');
-        //
-        // event.respondWith(
-        //     caches.match(event.request).then(function(response) {
-        //         return response || fetch(event.request);
-        //     })
-        // );
-
-    // }
 
 });
