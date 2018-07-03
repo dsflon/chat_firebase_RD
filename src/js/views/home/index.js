@@ -42,11 +42,11 @@ class App extends React.Component {
     componentDidUpdate() {
         if(this.meta) {
             this.UpdateMeta();
+            this.CheckIndexedDB();
         } else {
             Fetch(this.actions,this.myAccount);
         }
 
-        this.CheckIndexedDB();
         window.CheckNetwork();
     }
 
@@ -158,9 +158,9 @@ class App extends React.Component {
         let timer;
 
         let SetDB = () => {
+            timer = setTimeout( () => { location.reload() }, 5000);
             return new Promise((resolve, reject) => {
                 window.ChatIndexDB.Set(id,resolve);
-                timer = setTimeout( () => { location.reload() }, 5000);
             });
         }
         let GetAllDB = () => {

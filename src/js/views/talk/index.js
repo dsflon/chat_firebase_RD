@@ -34,7 +34,13 @@ class App extends React.Component {
             this.ShowLoading();
 
             if(chatStorageMess) {
-                this.actions.Messages( JSON.parse(chatStorageMess) );
+                let messageData = JSON.parse(chatStorageMess);
+                for (var talkId in messageData) {
+                    if (this.imagesDB.hasOwnProperty(talkId)) {
+                        messageData[talkId].image = this.imagesDB[talkId];
+                    }
+                }
+                this.actions.Messages( messageData );
                 this.HideLoading();
             }
             setTimeout(this.GetMessageData.bind(this),1);
@@ -106,14 +112,13 @@ class App extends React.Component {
 
     GetMessageData() {
 
-        let imagesDB = this.state.imagesDB;
         let Message = {}, timer;
 
         let SetMessages = (data) => {
             Message[data.key] = data.val();
             if( Message[data.key].image && Message[data.key].image != "pre_upload" ) {
-                if (imagesDB.hasOwnProperty(data.key)) {
-                    Message[data.key].image = imagesDB[data.key];
+                if (this.imagesDB.hasOwnProperty(data.key)) {
+                    Message[data.key].image = this.imagesDB[data.key];
                 } else {
                     this.UploadArrayBuffer({
                         image: Message[data.key].image,
@@ -146,7 +151,7 @@ class App extends React.Component {
         this.messagesRef.once("value").then( (snapshot) => {
 
             let data = snapshot.val(),
-                talkIds = imagesDB ? Object.keys(imagesDB) : [];
+                talkIds = this.imagesDB ? Object.keys(this.imagesDB) : [];
 
             for (var i = 0; i < talkIds.length; i++) {
                 if( !data[talkIds[i]] ) {
@@ -181,6 +186,8 @@ class App extends React.Component {
         this.state = this.props.state;
         this.actions = this.props.actions;
         this.history = this.props.history;
+
+        this.imagesDB = this.state.imagesDB;
 
         let roomName = this.GetRoomName();
         let myMeta = this.state.meta ? this.state.meta[this.roomId] : null
