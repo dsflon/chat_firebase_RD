@@ -1,6 +1,6 @@
 class ChatIndexDB {
 
-    constructor(dbName) {
+    constructor(dbName,callback) {
 
         this.dataBaseName = dbName;
         this.chatDB = null;
@@ -8,14 +8,17 @@ class ChatIndexDB {
         this.dbVersion = 0;
         this.stores = [];
 
-        this.Init();
+        this.Init(callback);
 
     }
 
-    Init() {
+    Init(callback) {
         this.chatDB = window.indexedDB.open(this.dataBaseName);
         this.chatDB.onerror = this.Onerror.bind(this);
-        this.chatDB.onsuccess = this.Onsuccess.bind(this);
+        this.chatDB.onsuccess = (e) => {
+            this.Onsuccess(e);
+            if( callback ) callback(e);
+        };
     }
 
     Onerror(e) {

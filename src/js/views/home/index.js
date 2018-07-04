@@ -107,7 +107,12 @@ class App extends React.Component {
 
     CheckLogin() {
 
-        this.HideLoading();
+        /*
+        ** Indexed DB
+        */
+        window.ChatIndexDB = new ChatIndexDB("ChatDatabase",()=>{
+            this.HideLoading();
+        });
 
         window.auth.onAuthStateChanged( (user) => {
             if (user) { // User is signed in!
@@ -130,11 +135,6 @@ class App extends React.Component {
                 window.usersRef.off();
                 window.usersRef.on('child_added', this.UpdateUsers.bind(this));
                 window.usersRef.on('child_changed', this.UpdateUsers.bind(this));
-
-                /*
-                ** Indexed DB
-                */
-                window.ChatIndexDB = new ChatIndexDB("ChatDatabase");
 
             } else { // User is signed out!
                 this.actions.Login(null);
