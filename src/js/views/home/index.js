@@ -43,6 +43,7 @@ class App extends React.Component {
         if(this.meta) {
             this.UpdateMeta();
             this.CheckIndexedDB();
+            this.CheckLocalStorage();
         } else {
             Fetch(this.actions,this.myAccount);
         }
@@ -55,14 +56,29 @@ class App extends React.Component {
         if(!window.ChatIndexDB) return false;
 
         let stores = window.ChatIndexDB.stores,
-            metaKey = Object.keys(this.meta);
+            metaKeys = Object.keys(this.meta);
 
         for (var i = 0; i < stores.length; i++) {
-            if( metaKey.indexOf(stores[i]) === -1 ) {
+            if( metaKeys.indexOf(stores[i]) === -1 ) {
                 window.ChatIndexDB.RemoveStore(stores[i]);
-                // localStorage.removeItem("ChatStorageMess_"+stores[i]);
             }
         }
+
+    }
+
+    CheckLocalStorage() { // Local Storageをチェックして利用していないものは削除する
+
+        let metaKeys = Object.keys(this.meta);
+
+        for(var key in localStorage) {
+            if( key.indexOf("ChatStorageMess_") !== -1 ) {
+                let roomId = key.split("ChatStorageMess_")[1];
+                if( metaKeys.indexOf(roomId) === -1 ) {
+                    localStorage.removeItem("ChatStorageMess_"+roomId);
+                }
+            }
+        }
+
     }
 
     UpdateMeta() {
