@@ -1,11 +1,14 @@
 import React from 'react';
 import ImgTrim from '../../common/_img_trimming';
 
+import Ua from '../../libs/j_ua';
+
 class Input extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = { disabled: "disabled" }
+        this.UA = new Ua();
     }
 
     componentDidMount() {
@@ -117,10 +120,12 @@ class Input extends React.Component {
         this.messagesRef = this.props.messagesRef;
         this.metaRef = this.props.metaRef;
 
+        let inputAcc = this.UA.GetAndroidVersion() > 6 ? "image/*,capture=camera" : "image/*,application/pdf,capture=camera";
+
         return (
             <footer id="from">
                 <form id="from-image">
-                    <input id="image-input" ref="image_input" onChange={this.PostImage.bind(this)} type="file" accept="image/*,capture=camera" />
+                    <input id="image-input" ref="image_input" onChange={this.PostImage.bind(this)} type="file" accept={inputAcc} />
                     <label id="image-btn" htmlFor="image-input"><span>Image</span></label>
                 </form>
                 <form id="from-mess">

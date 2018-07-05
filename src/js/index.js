@@ -15,9 +15,6 @@ import Root from './_root'
 //scss
 import '../scss/style.scss'
 
-import Ua from './libs/j_ua';
-const UA = new Ua();
-
 window.LOADING_IMAGE = 'https://www.google.com/images/spin-32.gif';
 
 /*
