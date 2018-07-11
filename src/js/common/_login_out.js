@@ -28,6 +28,7 @@ const Log = {
 
         let res = confirm("ログアウトしますか？");
         if( res == true ) {
+            localStorage.removeItem("ChatStorageUser");
             window.auth.signOut().then( () => {
                 console.log("ログアウトしました。");
                 location.reload(); //都合悪いからリロード
