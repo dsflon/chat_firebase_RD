@@ -140,6 +140,7 @@ class App extends React.Component {
             delete Message[data.key];
             this.actions.Messages(Message);
             this.SetScroll();
+            localStorage.setItem("ChatStorageMess_"+this.roomId, JSON.stringify(Message));
         };
 
         this.messagesRef.off();

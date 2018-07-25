@@ -13,6 +13,7 @@ import Log from '../../common/_login_out';
 import Fetch from '../../common/_fetch';
 import TimeStamp from '../../common/_timestamp';
 import GetUniqueStr from '../../common/_getUniqueStr';
+import UpdateLastMessage from '../../common/_updateLastMessage';
 
 let prevId;
 
@@ -36,12 +37,15 @@ class App extends React.Component {
             this.ShowLoading();
             this.CheckLogin();
         }
+        if(this.meta) {
+            UpdateLastMessage(this.meta);
+        }
 
     }
 
     componentDidUpdate() {
         if(this.meta) {
-            this.UpdateMeta();
+            UpdateLastMessage(this.meta);
             this.CheckIndexedDB();
             this.CheckLocalStorage();
         } else {
@@ -78,35 +82,6 @@ class App extends React.Component {
                 }
             }
         }
-
-    }
-
-    UpdateMeta() {
-
-        let SetMeta = (roomId,data) => {
-            let updates = {};
-                updates['/lastMessage'] = data.message ? data.message : "画像を送信しました";
-                updates['/timestamp'] = data.timestamp;
-            window.metaRef.child(roomId).update(updates);
-        }
-
-        window.messagesRef.once('value').then( (snapshot) => {
-            let data = snapshot.val();
-            let meta = this.meta;
-
-            for (var roomId in meta) {
-
-                let keys = Object.keys(data[roomId]),
-                    length = keys.length,
-                    lastMessage = data[roomId][keys[length - 1]];
-
-                lastMessage = lastMessage ? lastMessage : {
-                    message: "メッセージがありません", timestamp : null
-                }
-                SetMeta(roomId,lastMessage);
-
-            }
-        })
 
     }
 
@@ -151,7 +126,6 @@ class App extends React.Component {
                 window.usersRef.off();
                 window.usersRef.on('child_added', this.UpdateUsers.bind(this));
                 window.usersRef.on('child_changed', this.UpdateUsers.bind(this));
-
             } else { // User is signed out!
                 this.actions.Login(null);
                 this.HideLoading();
