@@ -17,3 +17,5 @@ wp-content/uploads/
 sitemap.xml
 sitemap.xml.gz
 sftp-config.json
+
+fireinit.js

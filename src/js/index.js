@@ -11,25 +11,12 @@ import { createStore } from 'redux'
 import reducer from './reducers'
 
 import Root from './_root'
+import FireInit from './fireinit';
 
 //scss
 import '../scss/style.scss'
 
 window.LOADING_IMAGE = 'https://www.google.com/images/spin-32.gif';
-
-/*
-** Firebase Initialize
-*/
-const config = {
-  apiKey: "AIzaSyDHqPAR21LP_y8MTQttOUl2rZR_EP0atcQ",
-  authDomain: "chat-3f1a7.firebaseapp.com",
-  databaseURL: "https://chat-3f1a7.firebaseio.com",
-  projectId: "chat-3f1a7",
-  storageBucket: "chat-3f1a7.appspot.com",
-  messagingSenderId: "1092855635066"
-};
-firebase.initializeApp(config);
-
 
 /*
 ** Create Store
